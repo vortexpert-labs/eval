@@ -1,0 +1,14 @@
+[
+  {"repo": "pallets/click",  "pr": 3805, "note": "copy/deepcopy/pickle of Sentinel members"},
+  {"repo": "pallets/click",  "pr": 3769, "note": "progress bar final position"},
+  {"repo": "pallets/click",  "pr": 3781, "note": "pathlib.Path support in edit"},
+  {"repo": "Delgan/loguru",  "pr": 1510, "note": "@logger.catch() ignoring athrow() errors"},
+  {"repo": "Delgan/loguru",  "pr": 1508, "note": "negative timestamp formatting"},
+  {"repo": "Delgan/loguru",  "pr": 1484, "note": "weekday rotation ignoring the weekday"},
+  {"repo": "honojs/hono",    "pr": 5255, "note": "accepts wildcard media types and specificity"},
+  {"repo": "honojs/hono",    "pr": 5252, "note": "router prefix overmatch on wildcard"},
+  {"repo": "honojs/hono",    "pr": 5236, "note": "trie-router suffix wildcard routes"},
+  {"repo": "honojs/hono",    "pr": 5264, "note": "jsx/dom ref cleanup on prop change"},
+  {"repo": "honojs/hono",    "pr": 5274, "note": "abort listeners crashing abort()"},
+  {"repo": "honojs/hono",    "pr": 5283, "note": "client omits empty query delimiter"}
+]
