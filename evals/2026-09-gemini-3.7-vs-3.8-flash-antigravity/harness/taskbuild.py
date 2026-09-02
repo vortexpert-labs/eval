@@ -298,7 +298,9 @@ def build_task(slug: str, pr_number: int, verify: bool = True) -> dict:
     (task_dir / "allowed_paths.txt").write_text(
         "\n".join(profile.allowed_globs) + "\n"
     )
-    (task_dir / "prompt.md").write_text(render_prompt(statement, profile))
+    failing = failing_test_names(test_patch)
+    result["failing_test_names"] = failing
+    (task_dir / "prompt.md").write_text(render_prompt(statement, profile, failing))
 
     if verify:
         result["verification"] = verify_task(
@@ -313,6 +315,35 @@ def build_task(slug: str, pr_number: int, verify: bool = True) -> dict:
 
     (task_dir / "repo.lock").write_text(json.dumps(result, indent=2) + "\n")
     return result
+
+
+#: Test declarations added by the hidden patch. Names only — a name states the
+#: requirement, which is what a CI failure shows a maintainer; the body would
+#: reveal the expected implementation.
+TEST_DECL = [
+    re.compile(r"^\+\s*(?:async\s+)?def\s+(test_\w+)"),
+    re.compile(r"""^\+\s*(?:it|test)(?:\.\w+)*\s*\(\s*['"`](.+?)['"`]"""),
+]
+
+
+def failing_test_names(patch: str) -> list[str]:
+    """Extract `path::name` for every test declaration the hidden patch adds."""
+    found: list[str] = []
+    current = ""
+    for line in patch.splitlines():
+        if line.startswith("+++ b/"):
+            current = line[6:].strip()
+            continue
+        if not line.startswith("+") or line.startswith("+++"):
+            continue
+        for pattern in TEST_DECL:
+            m = pattern.match(line)
+            if m:
+                entry = f"{current}::{m.group(1)}"
+                if entry not in found:
+                    found.append(entry)
+                break
+    return found
 
 
 def clean(text: str) -> str:
@@ -337,14 +368,30 @@ def problem_statement(pr: dict, issue: dict | None) -> tuple[str, str]:
     return f"## {pr['title']}", "pr-title-only"
 
 
-def render_prompt(problem: str, profile: C.RepoProfile) -> str:
-    """The problem statement the agent sees. Never mentions the hidden tests."""
+def render_prompt(
+    problem: str, profile: C.RepoProfile, failing: list[str] | None = None
+) -> str:
+    """The problem statement the agent sees.
+
+    Includes the *names* of the failing tests, which is what a continuous
+    integration run shows a maintainer. Never their contents.
+    """
+    section = ""
+    if failing:
+        listed = "\n".join(f"- `{name}`" for name in failing)
+        section = (
+            "\n## Failing tests\n\n"
+            "These tests currently fail and must pass when you are done. Their "
+            "contents are not shown to you, and they are not present in this "
+            "working tree.\n\n"
+            f"{listed}\n"
+        )
     return f"""# Task
 
 You are working in a checkout of `{profile.slug}`.
 
 {problem}
-
+{section}
 ## What to do
 
 Fix the behaviour described above by editing the project's source code. Work

@@ -23,7 +23,7 @@ import config as C  # noqa: E402
 import runner  # noqa: E402
 import score  # noqa: E402
 from analyze import paired_bootstrap  # noqa: E402
-from taskbuild import leak_scan  # noqa: E402
+from taskbuild import failing_test_names, leak_scan  # noqa: E402
 
 FAILURES: list[str] = []
 
@@ -202,8 +202,28 @@ def test_leak_scan() -> None:
           == [])
 
 
+def test_failing_names() -> None:
+    print("failing test name extraction")
+    patch = (
+        "+++ b/tests/test_x.py\n"
+        "+def test_alpha():\n+    assert 1\n"
+        "+async def test_beta():\n+    pass\n"
+        "+++ b/src/a.test.ts\n"
+        "+  it('handles empty input', async () => {\n+    expect(1).toBe(1)\n+  })\n"
+    )
+    names = failing_test_names(patch)
+    check("python and typescript tests are both found", len(names) == 3, str(names))
+    check("names are qualified by file",
+          names[0] == "tests/test_x.py::test_alpha", names[0])
+    check("typescript it() titles are captured",
+          names[2] == "src/a.test.ts::handles empty input", names[2])
+    check("assertion bodies are never captured",
+          not any("expect" in n or "assert" in n for n in names))
+
+
 def main() -> int:
-    for fn in (test_queue, test_classify, test_diff, test_bootstrap, test_leak_scan):
+    for fn in (test_queue, test_classify, test_diff, test_bootstrap, test_leak_scan,
+               test_failing_names):
         fn()
     print()
     if FAILURES:
