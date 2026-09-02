@@ -23,6 +23,7 @@ import config as C  # noqa: E402
 import runner  # noqa: E402
 import score  # noqa: E402
 from analyze import paired_bootstrap  # noqa: E402
+from scrub import find_secrets, redact  # noqa: E402
 from taskbuild import failing_test_names, leak_scan  # noqa: E402
 
 FAILURES: list[str] = []
@@ -221,9 +222,32 @@ def test_failing_names() -> None:
           not any("expect" in n or "assert" in n for n in names))
 
 
+def test_scrub() -> None:
+    print("publication scrub")
+    import getpass
+    from pathlib import Path as _P
+    home, user = str(_P.home()), getpass.getuser()
+    check("workspace paths are collapsed",
+          "Developer/dev/<private-project>" not in redact(f"{home}/Developer/dev/<private-project>/src/a.ts"))
+    check("home path is removed",
+          home not in redact(f'File "{home}/.local/share/mise/x.py"'))
+    check("username is removed", user not in redact(f"/Users/{user}/x"))
+    check("ordinary words survive redaction",
+          redact("install dev dependencies into a temp directory")
+          == "install dev dependencies into a temp directory")
+    check("a real credential is refused, not redacted",
+          # Built at runtime: a key-shaped literal in this file would itself
+          # trip the pre-commit gate, and rightly so.
+          find_secrets("HRKU-" + "x" * 30, "x") != [])
+    check("filenames are not secrets in source",
+          find_secrets("**/antigravity-oauth-token", "x") == [])
+    check("filenames ARE flagged inside run artifacts",
+          find_secrets("cat mcp_config.json", "x", artifact=True) != [])
+
+
 def main() -> int:
     for fn in (test_queue, test_classify, test_diff, test_bootstrap, test_leak_scan,
-               test_failing_names):
+               test_failing_names, test_scrub):
         fn()
     print()
     if FAILURES:

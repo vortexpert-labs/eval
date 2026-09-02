@@ -33,6 +33,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import config as C  # noqa: E402
+from scrub import redact  # noqa: E402
 
 SOURCE_EXTENSIONS = {".py", ".ts", ".tsx", ".js", ".jsx"}
 
@@ -183,7 +184,10 @@ def run(cmd: str, cwd: Path, timeout: int = 900) -> tuple[int, str]:
         )
     except subprocess.TimeoutExpired:
         return 124, f"TIMEOUT after {timeout}s: {cmd}"
-    return proc.returncode, (proc.stdout + proc.stderr)[-20000:]
+    # Redact at the point of capture. These logs are written into repo.lock and
+    # build_report.json, which ARE committed, and test output routinely contains
+    # absolute paths from tracebacks and test runner banners.
+    return proc.returncode, redact((proc.stdout + proc.stderr)[-20000:])
 
 
 # ---------------------------------------------------------------------- build

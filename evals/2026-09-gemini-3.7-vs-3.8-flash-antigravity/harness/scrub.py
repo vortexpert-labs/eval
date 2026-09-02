@@ -36,12 +36,54 @@ HOME = str(Path.home())
 USER = getpass.getuser()
 HOSTNAME = socket.gethostname()
 
+#: Generic directory names that are also ordinary English words. Redacting these
+#: as bare words would mangle legitimate text ("dev dependencies", "temp file"),
+#: so they are only redacted when they appear as a path segment.
+GENERIC_DIR_NAMES = {
+    "dev", "temp", "personal", "archive", "playground", "eval", "src", "docs",
+    "test", "tests", "build", "dist", "lib", "bin", "tmp", "work", "data",
+}
+
+
+def _private_projects() -> list[str]:
+    """Distinctive project directory names belonging to the operator.
+
+    These are the operator's own work and have nothing to do with the experiment.
+    An agent listing a parent directory would name them.
+    """
+    names: set[str] = set()
+    for parent in (Path.home() / "Developer", Path.home() / "Developer" / "dev",
+                   Path.home() / "Developer" / "personal"):
+        if parent.is_dir():
+            names.update(
+                d.name for d in parent.iterdir()
+                if d.is_dir()
+                and not d.name.startswith(".")
+                and d.name.lower() not in GENERIC_DIR_NAMES
+            )
+    return sorted(names, key=len, reverse=True)
+
+
+PRIVATE_PROJECTS = _private_projects()
+
+#: Any path under the operator's workspace that is not this experiment. Catches
+#: generic directory names safely, because a path segment is unambiguous.
+WORKSPACE_PATH = re.compile(
+    r"(?:<HOME>|/Users/[^/\s\"']+)/Developer/(?!dev/eval\b)[A-Za-z0-9_.\-]+"
+    r"(?:/[A-Za-z0-9_.\-]+)*"
+)
+
+
+def redact_paths(text: str) -> str:
+    return WORKSPACE_PATH.sub("<workspace-path>", text)
+
+
 #: Identifying but not secret. Substituted so artifacts stay readable.
-REDACTIONS: list[tuple[str, str]] = [
-    (HOME, "<HOME>"),
-    (USER, "<user>"),
-    (HOSTNAME, "<host>"),
-]
+#: Longest first, so a shorter name never shadows a longer one.
+REDACTIONS: list[tuple[str, str]] = (
+    [(HOME, "<HOME>"), (USER, "<user>"), (HOSTNAME, "<host>")]
+    + [(name, "<private-project>") for name in PRIVATE_PROJECTS]
+)
 
 #: Credential shapes. A hit fails the scrub; nothing is published.
 SECRET_PATTERNS: list[tuple[re.Pattern[str], str]] = [
@@ -77,6 +119,8 @@ TEXT_SUFFIXES = {".json", ".jsonl", ".patch", ".txt", ".log", ".csv", ".md", ".l
 
 
 def redact(text: str) -> str:
+    """Substitute identifying strings. Paths first, then names."""
+    text = redact_paths(text)
     for needle, replacement in REDACTIONS:
         if needle:
             text = text.replace(needle, replacement)
