@@ -23,6 +23,7 @@ import config as C  # noqa: E402
 import runner  # noqa: E402
 import score  # noqa: E402
 from analyze import paired_bootstrap  # noqa: E402
+from taskbuild import leak_scan  # noqa: E402
 
 FAILURES: list[str] = []
 
@@ -181,8 +182,24 @@ def test_bootstrap() -> None:
     check("empty input is handled", paired_bootstrap([], rng) == (None, None, None))
 
 
+def test_leak_scan() -> None:
+    print("problem-statement leak detection")
+    check("a fix section is caught",
+          "fix-section" in leak_scan("### The bug\nx\n### The fix\ntrack the weekday"))
+    check("the phrase 'the fix' is caught",
+          "the-fix-phrase" in leak_scan("The fix contains errors per listener."))
+    check("a diff block is caught", "diff-block" in leak_scan("```diff\n-a\n+b\n```"))
+    check("author narrative is caught",
+          "author-narrative" in leak_scan("I changed the parser to handle this."))
+    check("a plain bug report passes",
+          leak_scan("Calling foo() with a negative value raises ValueError.") == [])
+    check("a reproduction script passes",
+          leak_scan("Reproduced with:\n```python\nimport asyncio\n```\nExpected no error.")
+          == [])
+
+
 def main() -> int:
-    for fn in (test_queue, test_classify, test_diff, test_bootstrap):
+    for fn in (test_queue, test_classify, test_diff, test_bootstrap, test_leak_scan):
         fn()
     print()
     if FAILURES:

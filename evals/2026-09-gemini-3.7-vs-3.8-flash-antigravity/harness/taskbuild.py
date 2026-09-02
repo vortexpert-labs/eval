@@ -35,7 +35,47 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import config as C  # noqa: E402
 
 SOURCE_EXTENSIONS = {".py", ".ts", ".tsx", ".js", ".jsx"}
-CODE_BLOCK = re.compile(r"```|^\s{4}[+-]\s|^\s*[+-]{3}\s", re.MULTILINE)
+
+#: A pull request body is written *after* the fix, by the person who wrote it, and
+#: routinely explains the solution. Using it as a problem statement leaks the answer
+#: unevenly across tasks. Prefer the linked issue, which predates the fix.
+ISSUE_REF = re.compile(
+    r"\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s*:?\s*#(\d+)", re.IGNORECASE
+)
+
+#: Phrases that indicate an author describing their own change rather than the
+#: symptom. A statement matching any of these is rejected as solution leakage.
+LEAK_PATTERNS = [
+    (re.compile(r"^#{1,6}\s*(the\s+)?fix\b", re.IGNORECASE | re.MULTILINE), "fix-section"),
+    (re.compile(r"^#{1,6}\s*(the\s+)?(cause|solution|approach|changes?)\b",
+                re.IGNORECASE | re.MULTILINE), "solution-section"),
+    (re.compile(r"\bthe fix\b", re.IGNORECASE), "the-fix-phrase"),
+    (re.compile(r"\b(?:I|we)\s+(?:changed|fixed|added|patched|refactored)\b",
+                re.IGNORECASE), "author-narrative"),
+    (re.compile(r"```diff", re.IGNORECASE), "diff-block"),
+    (re.compile(r"^#{1,6}\s*tests?\b", re.IGNORECASE | re.MULTILINE), "tests-section"),
+    (re.compile(r"\b(?:added|adds)\s+(?:a\s+)?(?:new\s+)?tests?\b", re.IGNORECASE),
+     "describes-added-tests"),
+]
+
+
+def leak_scan(text: str) -> list[str]:
+    """Flags indicating the statement describes the solution rather than the bug."""
+    return sorted({name for pattern, name in LEAK_PATTERNS if pattern.search(text)})
+
+
+def linked_issue(slug: str, pr: dict) -> dict | None:
+    """The issue this PR closes, if any. Written before the fix, so far safer."""
+    match = ISSUE_REF.search(pr.get("body") or "")
+    if not match:
+        return None
+    try:
+        issue = gh_json(f"repos/{slug}/issues/{match.group(1)}")
+    except RuntimeError:
+        return None
+    if "pull_request" in issue:  # the reference pointed at another PR
+        return None
+    return issue
 
 
 # ---------------------------------------------------------------- classification
@@ -218,8 +258,19 @@ def build_task(slug: str, pr_number: int, verify: bool = True) -> dict:
     if not test_patch.strip():
         return {**result, "status": "rejected", "reason": "empty test patch"}
 
-    body = (pr.get("body") or "").strip()
-    result["body_contains_code"] = bool(CODE_BLOCK.search(body))
+    issue = linked_issue(slug, pr)
+    statement, source = problem_statement(pr, issue)
+    flags = leak_scan(statement)
+    result.update(statement_source=source, leak_flags=flags)
+    if flags:
+        return {
+            **result,
+            "status": "rejected",
+            "reason": (
+                f"problem statement describes the solution ({', '.join(flags)}); "
+                f"source={source}"
+            ),
+        }
 
     task_dir = C.TASKS_DIR / "real" / task_id
     task_dir.mkdir(parents=True, exist_ok=True)
@@ -229,7 +280,7 @@ def build_task(slug: str, pr_number: int, verify: bool = True) -> dict:
     (task_dir / "allowed_paths.txt").write_text(
         "\n".join(profile.allowed_globs) + "\n"
     )
-    (task_dir / "prompt.md").write_text(render_prompt(pr, profile))
+    (task_dir / "prompt.md").write_text(render_prompt(statement, profile))
 
     if verify:
         result["verification"] = verify_task(
@@ -246,13 +297,30 @@ def build_task(slug: str, pr_number: int, verify: bool = True) -> dict:
     return result
 
 
-def render_prompt(pr: dict, profile: C.RepoProfile) -> str:
+def clean(text: str) -> str:
+    text = re.sub(r"<!--.*?-->", "", text or "", flags=re.DOTALL)
+    text = re.sub(r"^\s*- \[[ xX]\].*$", "", text, flags=re.MULTILINE)  # checklists
+    return text.strip()
+
+
+def problem_statement(pr: dict, issue: dict | None) -> tuple[str, str]:
+    """Return (statement, source).
+
+    Prefers the linked issue: it is written before the fix exists, so it describes
+    the symptom rather than the change. Falls back to the pull request title alone,
+    which is symptom-level, rather than the body, which is not.
+    """
+    if issue is not None:
+        body = clean(issue.get("body", ""))
+        if body:
+            if len(body) > 4000:
+                body = body[:4000].rsplit("\n", 1)[0] + "\n\n[truncated]"
+            return f"## {issue['title']}\n\n{body}", f"issue#{issue['number']}"
+    return f"## {pr['title']}", "pr-title-only"
+
+
+def render_prompt(problem: str, profile: C.RepoProfile) -> str:
     """The problem statement the agent sees. Never mentions the hidden tests."""
-    body = (pr.get("body") or "").strip()
-    body = re.sub(r"<!--.*?-->", "", body, flags=re.DOTALL).strip()
-    if len(body) > 4000:
-        body = body[:4000].rsplit("\n", 1)[0] + "\n\n[truncated]"
-    problem = f"## {pr['title']}\n\n{body}" if body else f"## {pr['title']}"
     return f"""# Task
 
 You are working in a checkout of `{profile.slug}`.
