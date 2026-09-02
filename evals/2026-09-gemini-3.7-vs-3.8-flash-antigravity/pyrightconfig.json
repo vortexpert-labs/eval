@@ -1,0 +1,7 @@
+{
+  "include": ["harness", "scoring", "analysis"],
+  "extraPaths": ["harness"],
+  "pythonVersion": "3.12",
+  "typeCheckingMode": "basic",
+  "reportMissingImports": "error"
+}
