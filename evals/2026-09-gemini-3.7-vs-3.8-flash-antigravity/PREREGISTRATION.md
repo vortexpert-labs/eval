@@ -1,13 +1,36 @@
-# Pre-registration
+# Pre-registration — version 2
 
-**Committed before any scored run.** Amendments after data collection begins are prohibited;
-anything added later is labelled exploratory and reported separately.
+**Committed before any run of any kind.** Amendments after data collection begins
+are prohibited; anything added later is labelled exploratory and reported
+separately.
 
 | | |
 |---|---|
-| Registered | 2026-09-02 |
+| Version 1 registered | 2026-09-02 (commit `35201e0`) |
+| Version 2 registered | 2026-09-03 |
 | Experiment | Gemini 3.7 Flash vs Gemini 3.8 Flash, inside Google Antigravity |
-| Status at registration | No scored runs collected. No calibration runs collected. |
+| Status at reissue | **No scored runs. No calibration runs. No model output of any kind had been produced.** |
+
+## Why this document was reissued
+
+Version 1 was written before the task builder existed. Building the candidate set
+exposed two defects in task *construction*, both fixed before any run:
+
+1. Pull request bodies, used as problem statements, frequently describe the
+   solution — two candidates handed over the fix, including the tests that were
+   added.
+2. Removing them left five of nine tasks with a one-line title as their entire
+   statement, so a correct-but-different fix would have scored as a failure.
+
+Both changes are recorded in full in `DEVIATIONS.md`, which preserves the version 1
+protocol and the reasoning for each change. This document reflects the design that
+will actually run, so a reader gets one coherent protocol rather than a document
+contradicted by its own amendments.
+
+**This reissue is legitimate because no data existed when it was made.** Nothing in
+it was informed by any run, any model output, or any outcome. Pre-registration
+guards against changing the plan after seeing results; that could not have happened
+here, and cannot happen again — construction rules are frozen in section 4.
 
 ---
 
@@ -68,6 +91,23 @@ strictly more conservative.
 changes, leave source unchanged, and verify the suite fails cleanly. The agent's job is to make the
 tests pass. The tests are hidden — the agent is never shown them.
 
+**The agent's problem statement.** Taken from the **linked issue** where the pull
+request closes one, because an issue is written before the fix exists and describes
+the symptom rather than the change. Where no linked issue exists, the statement is
+the **pull request title alone**; pull request bodies are never used, because they
+are written after the fix and routinely explain it.
+
+Every statement is then scanned for solution leakage and the task is **rejected**
+if it contains a fix section, a cause or solution section, the phrase "the fix",
+author narrative, a `diff` block, or a description of the tests that were added.
+`statement_source` and any `leak_flags` are recorded per task and published.
+
+**The agent is told which tests fail, never what they contain.** Each prompt lists
+the failing tests by name, qualified by file, in the form a continuous integration
+run reports them. A name states the requirement; the body would state the
+implementation. Test files remain absent from the working tree. This is strictly
+less information than a maintainer fixing the real bug would have.
+
 **Exclusion rules, fixed in advance:**
 - Any task whose tests do not fail cleanly at base is dropped. No workarounds.
 - Any repository containing `hooks.json` is refused outright (arbitrary shell execution under
@@ -75,10 +115,20 @@ tests pass. The tests are hidden — the agent is never shown them.
 - `refactor:` and `perf:` PRs are excluded — their tests frequently pass at base.
 - Platform-specific fixes that cannot fail on macOS are excluded.
 
-**Selection rule — registered before any calibration run.** Approximately 12 candidate tasks are
-built. Each is run **once** with `gemini-3.6-flash-high`, a model that appears nowhere in the
-comparison. Tasks the calibrator passes trivially (≤2 turns, clean first attempt) or fails outright
-are dropped. The surviving tasks in the discriminating band are kept, up to 6 for the pilot.
+**Construction rules are now FROZEN.** Twelve candidates were built; nine were
+accepted and three rejected with recorded reasons (one for a test file excluded
+from the repository's own test configuration, two for solution leakage in the
+linked issue). No further change will be made to task construction, statement
+sourcing, or acceptance criteria. If calibration shows the set does not
+discriminate, that is a finding about the task set and will be reported as one,
+not silently corrected by another rebuild.
+
+**Selection rule — registered before any calibration run.** Each of the nine
+accepted tasks is run **once** with `gemini-3.6-flash-high`, a model that appears
+nowhere in the comparison. Tasks the calibrator passes trivially (≤2 turns, clean
+first attempt) or fails outright are dropped. The surviving tasks in the
+discriminating band are kept, up to 6 for the pilot. If fewer than 6 survive, the
+pilot runs on however many do and the reduced n is reported.
 
 Calibration is never run with `gemini-3.7-flash-high` or `gemini-3.8-flash-high`. Selecting tasks on
 the models under test would manufacture the result. The calibration run and its outputs are
