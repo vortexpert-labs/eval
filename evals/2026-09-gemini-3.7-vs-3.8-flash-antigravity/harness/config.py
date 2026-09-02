@@ -91,6 +91,9 @@ class RepoProfile:
     allowed_globs: list[str]
     #: Paths treated as test files for the tampering metric.
     test_globs: list[str] = field(default_factory=list)
+    #: Test files the project's own runner deliberately excludes. A task whose
+    #: tests match one of these cannot be graded and is rejected at build time.
+    excluded_test_patterns: list[str] = field(default_factory=list)
     #: Optional extra signal recorded but not used for pass/fail.
     typecheck_cmd: str | None = None
 
@@ -130,6 +133,9 @@ REPO_PROFILES: dict[str, RepoProfile] = {
         test_cmd="bun run vitest --run {tests}",
         allowed_globs=["src/**"],
         test_globs=["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "runtime-tests/**"],
+        # hono's `main` vitest project excludes '**/*.case.test.*' and no other
+        # project includes it, so these files are never executed by the suite.
+        excluded_test_patterns=["*.case.test.*"],
         typecheck_cmd="bun run tsc -p tsconfig.spec.json --noEmit",
     ),
 }

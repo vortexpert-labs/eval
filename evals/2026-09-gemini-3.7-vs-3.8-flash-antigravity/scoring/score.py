@@ -136,7 +136,9 @@ def score_run(run_dir: Path) -> dict:
                               note=f"setup failed during scoring: {log[-500:]}")
                 return result
 
-        cmd = profile.test_cmd.format(tests=" ".join(lock["test_paths"]))
+        cmd = profile.test_cmd.format(
+            tests=" ".join(lock.get("runnable_test_paths") or lock["test_paths"])
+        )
         rc, log = run_cmd(cmd, wt)
         (run_dir / "test_output.txt").write_text(log)
         passed = rc == 0

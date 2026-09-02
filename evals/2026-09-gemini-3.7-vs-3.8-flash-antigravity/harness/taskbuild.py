@@ -54,6 +54,23 @@ def is_test_path(path: str, profile: C.RepoProfile) -> bool:
     return path.startswith("tests/") or "/tests/" in path
 
 
+def is_runnable_test(path: str, profile: C.RepoProfile) -> bool:
+    """Can this path be handed to the project's test runner?
+
+    Distinct from `is_test_path`. A repository's test tree also holds fixtures —
+    expected-output `.txt` files, sample source scripts, mypy typing stubs — which
+    belong in the hidden patch (the test cannot pass without them) but are not
+    themselves runnable targets. Passing one to pytest or vitest fails collection.
+    """
+    name = Path(path).name
+    if Path(path).suffix == ".py":
+        return name.startswith("test_") or name.endswith("_test.py")
+    for suffix in (".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx", ".test.js"):
+        if name.endswith(suffix):
+            return True
+    return False
+
+
 def is_source_path(path: str, profile: C.RepoProfile) -> bool:
     if is_test_path(path, profile):
         return False
@@ -146,10 +163,35 @@ def build_task(slug: str, pr_number: int, verify: bool = True) -> dict:
     paths = [f["filename"] for f in files]
     test_paths = [p for p in paths if is_test_path(p, profile)]
     src_paths = [p for p in paths if is_source_path(p, profile)]
-    result.update(test_paths=test_paths, source_paths=src_paths)
+    runnable = [p for p in test_paths if is_runnable_test(p, profile)]
+    result.update(
+        test_paths=test_paths,
+        source_paths=src_paths,
+        runnable_test_paths=runnable,
+    )
 
     if not test_paths:
         return {**result, "status": "rejected", "reason": "PR changes no test files"}
+    if not runnable:
+        return {
+            **result,
+            "status": "rejected",
+            "reason": "PR changes only test fixtures, no runnable test file",
+        }
+    excluded = [
+        p for p in runnable
+        if any(fnmatch.fnmatch(Path(p).name, pat)
+               for pat in profile.excluded_test_patterns)
+    ]
+    if excluded:
+        return {
+            **result,
+            "status": "rejected",
+            "reason": (
+                f"test file excluded from the project's own test configuration: "
+                f"{', '.join(excluded)}"
+            ),
+        }
     if not src_paths:
         return {**result, "status": "rejected", "reason": "PR changes no source files"}
     if len(src_paths) > 3:
@@ -191,7 +233,7 @@ def build_task(slug: str, pr_number: int, verify: bool = True) -> dict:
 
     if verify:
         result["verification"] = verify_task(
-            slug, profile, repo, base_sha, task_dir, test_paths
+            slug, profile, repo, base_sha, task_dir, runnable
         )
         ok = result["verification"]["accepted"]
         result["status"] = "accepted" if ok else "rejected"
@@ -251,6 +293,14 @@ def verify_task(
 
     out: dict = {"accepted": False, "reason": "", "stages": {}}
     tests_arg = " ".join(test_paths)
+
+    # Stage 1 can only exercise tests that exist at base. A PR that adds a new
+    # test file has nothing to run there, which is not a defect in the task.
+    at_base = set(
+        C.git("ls-tree", "-r", "--name-only", base_sha, cwd=repo).splitlines()
+    )
+    preexisting = [p for p in test_paths if p in at_base]
+    out["preexisting_tests"] = preexisting
     try:
         for cmd in profile.setup:
             rc, log = run(cmd, wt)
@@ -262,11 +312,21 @@ def verify_task(
 
         cmd = profile.test_cmd.format(tests=tests_arg)
 
-        rc_base, log_base = run(cmd, wt)
-        out["stages"]["base_without_hidden"] = {"rc": rc_base, "tail": log_base[-1500:]}
-        if rc_base != 0:
-            out["reason"] = "affected tests already fail at base without the hidden patch"
-            return out
+        if preexisting:
+            base_cmd = profile.test_cmd.format(tests=" ".join(preexisting))
+            rc_base, log_base = run(base_cmd, wt)
+            out["stages"]["base_without_hidden"] = {
+                "rc": rc_base, "tail": log_base[-1500:]
+            }
+            if rc_base != 0:
+                out["reason"] = (
+                    "pre-existing tests in the affected files already fail at base"
+                )
+                return out
+        else:
+            out["stages"]["base_without_hidden"] = {
+                "skipped": "all affected test files are new in this PR"
+            }
 
         rc, log = run(
             f"git apply {task_dir / 'tests' / 'hidden.patch'}", wt
