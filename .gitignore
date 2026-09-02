@@ -1,0 +1,34 @@
+# ---------------------------------------------------------------------------
+# CREDENTIAL SAFETY — this repository is public.
+# The agy eval HOME contains a plaintext OAuth refresh token
+# (<eval-home>/.gemini/antigravity-cli/antigravity-oauth-token).
+# It lives outside this repo by design (~/Developer/temp/agyeval-home).
+# These patterns are defence in depth in case it is ever copied in.
+# ---------------------------------------------------------------------------
+**/antigravity-oauth-token
+**/.gemini/
+**/agyeval-home*/
+**/*.pristine/
+*oauth*token*
+mcp_config.json
+.env
+.env.*
+secrets/
+
+# Frozen agy binary — 188 MB, not distributable
+**/agyeval-bin/
+*.old
+
+# Task working trees and checked-out upstream repos
+worktrees/
+tasks/**/checkout/
+
+# Python / Node
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+
+# macOS
+.DS_Store
