@@ -1,0 +1,8 @@
+#!/bin/sh
+# Refuse to commit staged content containing credentials, a home directory path,
+# or a username. This repository is public and publishes agent transcripts.
+for d in evals/*/; do
+    if [ -f "$d/harness/scrub.py" ]; then
+        python3 "$d/harness/scrub.py" --check-staged || exit 1
+    fi
+done

@@ -136,11 +136,17 @@ def capture_diff(wt: Path) -> str:
 
 
 def parse_stream(transcript: Path) -> dict:
-    """Pull the result envelope and tool-call count out of a stream-json log."""
+    """Parse a stream-json log.
+
+    Schema, confirmed against real output: one `{"event":"init",...}`, many
+    `{"event":"step_update",...}`, and a final `{"event":"result","result":{...}}`
+    carrying status, response, num_turns and cumulative usage.
+    """
     out = {
         "status": None, "response": "", "num_turns": None,
         "duration_seconds": None, "usage": {}, "tool_calls": 0,
         "asked_question": False, "conversation_id": None,
+        "initial_input_tokens": None, "tools_offered": None,
     }
     if not transcript.exists():
         return out
@@ -152,19 +158,36 @@ def parse_stream(transcript: Path) -> dict:
             event = json.loads(line)
         except json.JSONDecodeError:
             continue
-        etype = event.get("type") or ("result" if "status" in event else None)
-        blob = json.dumps(event)
-        if '"ask_question"' in blob:
-            out["asked_question"] = True
-        if etype == "step_update" or "tool" in blob.lower():
-            out["tool_calls"] += blob.count('"tool_name"') or 0
-        if "status" in event and "usage" in event:
-            out["status"] = event.get("status")
-            out["response"] = event.get("response") or ""
-            out["num_turns"] = event.get("num_turns")
-            out["duration_seconds"] = event.get("duration_seconds")
-            out["usage"] = event.get("usage") or {}
-            out["conversation_id"] = event.get("conversation_id")
+        kind = event.get("event")
+
+        if kind == "init":
+            init = event.get("init") or {}
+            out["conversation_id"] = init.get("conversation_id")
+            # Count of tools the scaffold exposes. A jump here means scaffold
+            # drift; the `ask_question` entry in this list is NOT an invocation.
+            out["tools_offered"] = len(init.get("tools") or [])
+
+        elif kind == "step_update":
+            step = event.get("step_update") or {}
+            # Each tool call emits ACTIVE then DONE; count one.
+            if step.get("step_type") == "tool" and step.get("state") == "ACTIVE":
+                out["tool_calls"] += 1
+                if step.get("tool_name") == "ask_question":
+                    out["asked_question"] = True
+            if (step.get("step_type") == "agent_response"
+                    and out["initial_input_tokens"] is None):
+                out["initial_input_tokens"] = (
+                    (step.get("usage") or {}).get("input_tokens")
+                )
+
+        elif kind == "result":
+            res = event.get("result") or {}
+            out["status"] = res.get("status")
+            out["response"] = res.get("response") or ""
+            out["num_turns"] = res.get("num_turns")
+            out["duration_seconds"] = res.get("duration_seconds")
+            out["usage"] = res.get("usage") or {}
+            out["conversation_id"] = res.get("conversation_id") or out["conversation_id"]
     return out
 
 
@@ -234,9 +257,10 @@ def execute(entry: dict, out_dir: Path, model_override: str | None = None) -> di
     stderr_text = stderr_log.read_text(errors="replace")
     status = classify(parsed, stderr_text, diff, timed_out)
 
-    tokens = parsed["usage"].get("input_tokens")
+    # Cumulative usage spans the whole session; scaffold size is the first step.
+    tokens = parsed["initial_input_tokens"]
     drift = (
-        abs(tokens - C.BASELINE_INPUT_TOKENS) > C.BASELINE_TOLERANCE
+        tokens < C.BASELINE_INPUT_TOKENS - C.BASELINE_TOLERANCE
         if isinstance(tokens, int) else None
     )
 
@@ -247,6 +271,8 @@ def execute(entry: dict, out_dir: Path, model_override: str | None = None) -> di
         "agy_duration_seconds": parsed["duration_seconds"],
         "num_turns": parsed["num_turns"], "tool_calls": parsed["tool_calls"],
         "usage": parsed["usage"], "scaffold_drift": drift,
+        "initial_input_tokens": parsed["initial_input_tokens"],
+        "tools_offered": parsed["tools_offered"],
         "asked_question": parsed["asked_question"],
         "envelope_status": parsed["status"],
         "response_empty": not parsed["response"].strip(),

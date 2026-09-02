@@ -19,6 +19,13 @@ secrets/
 **/agyeval-bin/
 *.old
 
+# Raw run artifacts are NEVER committed. They are produced by an agent running
+# with --dangerously-skip-permissions on a personal machine and contain absolute
+# paths, a username, a hostname, and whatever the agent read. Publish only the
+# scrubbed copy produced by harness/scrub.py, which fails loudly on credentials.
+evals/*/runs/
+!evals/*/runs/.gitkeep
+
 # Task working trees and checked-out upstream repos
 worktrees/
 tasks/**/checkout/
