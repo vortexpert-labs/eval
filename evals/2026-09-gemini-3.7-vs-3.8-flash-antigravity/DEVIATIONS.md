@@ -74,3 +74,30 @@ than a maintainer has when fixing a real bug, since they can also read the test.
 alike, so it shifts difficulty uniformly rather than differentially. Difficulty is
 not comparable to either earlier build; the calibration pass measures the set as
 it now stands.
+
+---
+
+## 2026-09-03 — Tasks with no extractable failing test names are rejected
+
+**Registered behaviour.** Section 4 of version 2 requires every prompt to list the
+names of the failing tests. It did not say what happens when none can be extracted.
+
+**What happened.** `loguru-1484`'s hidden patch adds four cases to an existing
+`@pytest.mark.parametrize` list rather than declaring a new test, so no test name
+exists to report. Its problem statement was also title-only. That combination —
+a one-line title with no failing tests named — is precisely the underspecification
+the previous deviation was made to eliminate.
+
+Git's hunk header for that patch names `test_size_rotation`, which is the nearest
+*preceding* definition rather than the enclosing test, so reporting it would have
+been actively wrong.
+
+**Change.** A task from which no failing test name can be extracted is rejected at
+build time. `loguru-1484` is dropped, leaving **8 accepted tasks**, still above the
+6 the pilot requires.
+
+**Why this is enforcement rather than a new rule.** Version 2 already requires the
+prompt to name the failing tests. A task that cannot satisfy that requirement
+cannot be built to specification. No run data existed when this was applied, and
+the rule is outcome-independent: it depends only on the shape of the upstream
+patch.

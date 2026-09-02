@@ -1,0 +1,18 @@
+diff --git a/loguru/_logger.py b/loguru/_logger.py
+index 894c0a5..3385c1f 100644
+--- a/loguru/_logger.py
++++ b/loguru/_logger.py
+@@ -1358,7 +1358,12 @@ class Logger:
+                             raise StopAsyncIteration
+ 
+                         async def athrow(self, *args, **kwargs):
+-                            return await self._gen.athrow(*args, **kwargs)
++                            with catcher:
++                                try:
++                                    return await self._gen.athrow(*args, **kwargs)
++                                except StopAsyncIteration:
++                                    pass
++                            raise StopAsyncIteration
+ 
+                     def catch_wrapper(*args, **kwargs):
+                         gen = function(*args, **kwargs)

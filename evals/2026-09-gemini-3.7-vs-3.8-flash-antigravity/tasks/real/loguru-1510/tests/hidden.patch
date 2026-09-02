@@ -1,0 +1,139 @@
+diff --git a/tests/exceptions/output/modern/exception_formatting_async_generator_throw.txt b/tests/exceptions/output/modern/exception_formatting_async_generator_throw.txt
+new file mode 100644
+index 0000000..7321914
+--- /dev/null
++++ b/tests/exceptions/output/modern/exception_formatting_async_generator_throw.txt
+@@ -0,0 +1,40 @@
++
++Traceback (most recent call last):
++  File "tests/exceptions/source/modern/exception_formatting_async_generator_throw.py", line 28, in <module>
++    op.send(None)
++  File "tests/exceptions/source/modern/exception_formatting_async_generator_throw.py", line 14, in foo
++    yield a
++ValueError: Bug
++
++Traceback (most recent call last):
++
++  File "tests/exceptions/source/modern/exception_formatting_async_generator_throw.py", line 28, in <module>
++    op.send(None)
++    │  └ <method 'send' of 'coroutine' objects>
++    └ <coroutine object Logger.catch.<locals>.Catcher.__call__.<locals>.AsyncGenCatchWrapper.athrow at 0xDEADBEEF>
++
++  File "tests/exceptions/source/modern/exception_formatting_async_generator_throw.py", line 14, in foo
++    yield a
++          └ 1
++
++ValueError: Bug
++
++Traceback (most recent call last):
++> File "tests/exceptions/source/modern/exception_formatting_async_generator_throw.py", line 28, in <module>
++    op.send(None)
++  File "tests/exceptions/source/modern/exception_formatting_async_generator_throw.py", line 14, in foo
++    yield a
++ValueError: Bug
++
++Traceback (most recent call last):
++
++> File "tests/exceptions/source/modern/exception_formatting_async_generator_throw.py", line 28, in <module>
++    op.send(None)
++    │  └ <method 'send' of 'coroutine' objects>
++    └ <coroutine object Logger.catch.<locals>.Catcher.__call__.<locals>.AsyncGenCatchWrapper.athrow at 0xDEADBEEF>
++
++  File "tests/exceptions/source/modern/exception_formatting_async_generator_throw.py", line 14, in foo
++    yield a
++          └ 1
++
++ValueError: Bug
+diff --git a/tests/exceptions/source/modern/decorate_async_generator.py b/tests/exceptions/source/modern/decorate_async_generator.py
+index b1dffed..ce2e1ae 100644
+--- a/tests/exceptions/source/modern/decorate_async_generator.py
++++ b/tests/exceptions/source/modern/decorate_async_generator.py
+@@ -93,10 +93,31 @@ def test_decorate_async_generator_then_async_throw():
+         await gen.asend(None)
+         try:
+             await gen.athrow(ValueError)
++        except StopAsyncIteration:
++            pass
++        else:
++            raise AssertionError("StopAsyncIteration not raised")
++
++    asyncio.run(coro())
++
++
++def test_decorate_async_generator_then_async_throw_with_handled_error():
++    @logger.catch
++    async def generator():
++        try:
++            yield 1
+         except ValueError:
+             pass
++
++    async def coro():
++        gen = generator()
++        await gen.asend(None)
++        try:
++            await gen.athrow(ValueError)
++        except StopAsyncIteration:
++            pass
+         else:
+-            raise AssertionError("ValueError not raised")
++            raise AssertionError("StopAsyncIteration not raised")
+ 
+     asyncio.run(coro())
+ 
+@@ -106,6 +127,7 @@ test_decorate_async_generator_with_error()
+ test_decorate_async_generator_with_error_reraised()
+ test_decorate_async_generator_then_async_send()
+ test_decorate_async_generator_then_async_throw()
++test_decorate_async_generator_then_async_throw_with_handled_error()
+ 
+ logger.add(sys.stderr, format="{message}")
+ logger.info("Done")
+diff --git a/tests/exceptions/source/modern/exception_formatting_async_generator_throw.py b/tests/exceptions/source/modern/exception_formatting_async_generator_throw.py
+new file mode 100644
+index 0000000..7131ffe
+--- /dev/null
++++ b/tests/exceptions/source/modern/exception_formatting_async_generator_throw.py
+@@ -0,0 +1,30 @@
++import sys
++
++from loguru import logger
++
++logger.remove()
++logger.add(sys.stderr, format="", diagnose=False, backtrace=False, colorize=False)
++logger.add(sys.stderr, format="", diagnose=True, backtrace=False, colorize=False)
++logger.add(sys.stderr, format="", diagnose=False, backtrace=True, colorize=False)
++logger.add(sys.stderr, format="", diagnose=True, backtrace=True, colorize=False)
++
++
++@logger.catch
++async def foo(a, b):
++    yield a
++    yield b
++
++
++gen = foo(1, 0)
++
++op = gen.asend(None)
++try:
++    op.send(None)
++except StopIteration:
++    pass
++
++op = gen.athrow(ValueError("Bug"))
++try:
++    op.send(None)
++except StopAsyncIteration:
++    pass
+diff --git a/tests/test_exceptions_formatting.py b/tests/test_exceptions_formatting.py
+index 25d003f..c2f4a94 100644
+--- a/tests/test_exceptions_formatting.py
++++ b/tests/test_exceptions_formatting.py
+@@ -248,6 +248,7 @@ def test_exception_others(filename):
+     [
+         ("type_hints", (3, 6)),
+         ("exception_formatting_async_generator", (3, 6)),
++        ("exception_formatting_async_generator_throw", (3, 6)),
+         ("decorate_async_generator", (3, 7)),
+         ("positional_only_argument", (3, 8)),
+         ("walrus_operator", (3, 8)),

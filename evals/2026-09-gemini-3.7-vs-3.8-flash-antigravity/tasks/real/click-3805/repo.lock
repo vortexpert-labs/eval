@@ -1,0 +1,50 @@
+{
+  "task_id": "click-3805",
+  "repo": "pallets/click",
+  "pr": 3805,
+  "merged_at": "2026-08-29T15:12:36Z",
+  "base_sha": "3cbcf9b11546f4cf10b36d3e2e531733ba6fe001",
+  "head_sha": "f58ca3e81424a35626c8a475eb59ab95589008ce",
+  "title": "Fix `copy`, `deepcopy` and `pickle` of `Sentinel` members",
+  "test_paths": [
+    "tests/test_utils/test_sentinel.py"
+  ],
+  "source_paths": [
+    "src/click/_utils.py"
+  ],
+  "runnable_test_paths": [
+    "tests/test_utils/test_sentinel.py"
+  ],
+  "statement_source": "pr-title-only",
+  "leak_flags": [],
+  "failing_test_names": [
+    "tests/test_utils/test_sentinel.py::test_sentinel_duplication_preserves_identity",
+    "tests/test_utils/test_sentinel.py::test_parameter_duplication"
+  ],
+  "verification": {
+    "accepted": true,
+    "reason": "",
+    "stages": {
+      "setup": {
+        "rc": 0
+      },
+      "base_without_hidden": {
+        "rc": 0,
+        "tail": ".                                                                        [100%]\n1 passed in 0.02s\n"
+      },
+      "base_with_hidden": {
+        "rc": 1,
+        "tail": "      #\n        # still not found -- try _missing_ hook\n        try:\n            exc = None\n            result = cls._missing_(value)\n        except Exception as e:\n            exc = e\n            result = None\n        try:\n            if isinstance(result, cls):\n                return result\n            elif (\n                    Flag is not None and issubclass(cls, Flag)\n                    and cls._boundary_ is EJECT and isinstance(result, int)\n                ):\n                return result\n            else:\n                ve_exc = ValueError(\"%r is not a valid %s\" % (value, cls.__qualname__))\n                if result is None and exc is None:\n>                   raise ve_exc\nE                   ValueError: <object object at 0x109e04330> is not a valid Sentinel\n\n../../../../../.local/share/mise/installs/python/3.12.14/lib/python3.12/enum.py:1170: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_utils/test_sentinel.py::test_sentinel_duplication_preserves_identity[pickle-Sentinel.UNSET] - ValueError: <object object at 0x108e4e040> is not a valid Sentinel\nFAILED tests/test_utils/test_sentinel.py::test_sentinel_duplication_preserves_identity[pickle-Sentinel.FLAG_NEEDS_VALUE] - ValueError: <object object at 0x108e4e3e0> is not a valid Sentinel\nFAILED tests/test_utils/test_sentinel.py::test_parameter_duplication[pickle] - ValueError: <object object at 0x109e04330> is not a valid Sentinel\n3 failed, 7 passed in 0.17s\n"
+      },
+      "reference_solution": {
+        "rc": 0,
+        "tail": "..........                                                               [100%]\n10 passed in 0.03s\n"
+      }
+    },
+    "preexisting_tests": [
+      "tests/test_utils/test_sentinel.py"
+    ],
+    "test_command": ".eval-venv/bin/python -m pytest -p no:randomly -q tests/test_utils/test_sentinel.py"
+  },
+  "status": "accepted"
+}

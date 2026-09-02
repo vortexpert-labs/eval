@@ -300,6 +300,19 @@ def build_task(slug: str, pr_number: int, verify: bool = True) -> dict:
     )
     failing = failing_test_names(test_patch)
     result["failing_test_names"] = failing
+    if not failing:
+        # The prompt must name the failing tests. A patch that only extends an
+        # existing parametrisation adds no test declaration, so the task cannot be
+        # specified to the agent and would be title-only and unspecified.
+        return {
+            **result,
+            "status": "rejected",
+            "reason": (
+                "no failing test names could be extracted; the hidden patch adds "
+                "no test declaration (e.g. it only extends an existing "
+                "parametrisation), so the task cannot be specified to the agent"
+            ),
+        }
     (task_dir / "prompt.md").write_text(render_prompt(statement, profile, failing))
 
     if verify:

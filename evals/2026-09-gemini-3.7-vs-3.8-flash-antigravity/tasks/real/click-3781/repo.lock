@@ -1,0 +1,51 @@
+{
+  "task_id": "click-3781",
+  "repo": "pallets/click",
+  "pr": 3781,
+  "merged_at": "2026-08-20T02:50:20Z",
+  "base_sha": "2103e157683c5e4cadc8ee1838df526a54bde9a4",
+  "head_sha": "a1d87858abd77fa8e3ffc204670ccd75b96c4781",
+  "title": "Add support of `pathlib.Path` to `edit`",
+  "test_paths": [
+    "tests/test_termui.py",
+    "tests/typing/typing_edit.py"
+  ],
+  "source_paths": [
+    "src/click/_termui_impl.py",
+    "src/click/termui.py"
+  ],
+  "runnable_test_paths": [
+    "tests/test_termui.py"
+  ],
+  "statement_source": "issue#2869",
+  "leak_flags": [],
+  "failing_test_names": [
+    "tests/test_termui.py::test_edit_pathlib"
+  ],
+  "verification": {
+    "accepted": true,
+    "reason": "",
+    "stages": {
+      "setup": {
+        "rc": 0
+      },
+      "base_without_hidden": {
+        "rc": 0,
+        "tail": "........................................................ssssssssssssssss [ 25%]\nsssss................ss................................................. [ 51%]\n........................................................................ [ 77%]\n................................................................         [100%]\n257 passed, 23 skipped in 0.66s\n"
+      },
+      "base_with_hidden": {
+        "rc": 1,
+        "tail": " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsrc/click/termui.py:898: in edit\n    ed.edit_files(filenames=filename)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <click._termui_impl.Editor object at 0x1056e0fb0>\nfilenames = PosixPath('/private/var/folders/33/5t46t6xn059_j8q1rhs634sh0000gn/T/pytest-of-<user>/pytest-43/test_edit_pathlib_single_0/file.txt')\n\n    def edit_files(self, filenames: cabc.Iterable[str]) -> None:\n        \"\"\"Open files in the user's editor.\"\"\"\n        import shlex\n        import subprocess\n    \n        editor = self.get_editor()\n        environ: dict[str, str] | None = None\n    \n        if self.env:\n            environ = os.environ.copy()\n            environ.update(self.env)\n    \n        try:\n            # Split in POSIX mode (the default) for the same reasons as\n            # in pager(): strips quotes from tokens and preserves quoted\n            # Windows paths.\n            c = subprocess.Popen(\n>               args=shlex.split(editor) + list(filenames),\n                                           ^^^^^^^^^^^^^^^\n                env=environ,\n            )\nE           TypeError: 'PosixPath' object is not iterable\n\nsrc/click/_termui_impl.py:730: TypeError\n=========================== short test summary info ============================\nFAILED tests/test_termui.py::test_edit_pathlib[single] - TypeError: 'PosixPath' object is not iterable\n1 failed, 258 passed, 23 skipped in 0.71s\n"
+      },
+      "reference_solution": {
+        "rc": 0,
+        "tail": "........................................................ssssssssssssssss [ 25%]\nsssss..................ss............................................... [ 51%]\n........................................................................ [ 76%]\n..................................................................       [100%]\n259 passed, 23 skipped in 0.57s\n"
+      }
+    },
+    "preexisting_tests": [
+      "tests/test_termui.py"
+    ],
+    "test_command": ".eval-venv/bin/python -m pytest -p no:randomly -q tests/test_termui.py"
+  },
+  "status": "accepted"
+}

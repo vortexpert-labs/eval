@@ -1,0 +1,48 @@
+{
+  "task_id": "loguru-1484",
+  "repo": "Delgan/loguru",
+  "pr": 1484,
+  "merged_at": "2026-08-23T13:58:04Z",
+  "base_sha": "2a17be730e111cf874d0bf967c4c5da15b7e4670",
+  "head_sha": "2546d51dc8011c2d8a8b9a916bb68c67e630c13b",
+  "title": "Fix first rotation of \"<weekday> at <time>\" ignoring the weekday",
+  "test_paths": [
+    "tests/test_filesink_rotation.py"
+  ],
+  "source_paths": [
+    "loguru/_file_sink.py"
+  ],
+  "runnable_test_paths": [
+    "tests/test_filesink_rotation.py"
+  ],
+  "statement_source": "pr-title-only",
+  "leak_flags": [],
+  "failing_test_names": [],
+  "verification": {
+    "accepted": true,
+    "reason": "",
+    "stages": {
+      "setup": {
+        "rc": 0
+      },
+      "base_without_hidden": {
+        "rc": 0,
+        "tail": "........................................................................ [ 50%]\n.................sssssssss............................................   [100%]\n133 passed, 9 skipped in 1.39s\n"
+      },
+      "base_with_hidden": {
+        "rc": 1,
+        "tail": "\nhours      = [1, 24, 24, 144, 168]\ni          = 0\nm          = 'e'\ntmp_path   = PosixPath('/private/var/folders/33/5t46t6xn059_j8q1rhs634sh0000gn/T/pytest-of-<user>/pytest-46/test_time_rotation_monday_at_11')\nwhen       = 'monday at 13:00'\n\ntests/test_filesink_rotation.py:169: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_filesink_rotation.py::test_time_rotation[w1 at 13:00-hours17] - AssertionError: assert ['', 'a\\n', '... 'd\\n', 'e\\n'] == ['a\\n', 'b\\nc... 'd\\n', 'e\\n']\n  \n  At index 0 diff: '' != 'a\\n'\n  Left contains one more item: 'e\\n'\n  \n  Full diff:\n    [\n  +     '',\n        'a\\n',\n        'b\\n'\n        'c\\n',\n        'd\\n',\n        'e\\n',\n    ]\nFAILED tests/test_filesink_rotation.py::test_time_rotation[tuesday at 13:00-hours18] - AssertionError: assert ['', 'a\\n', '... 'd\\n', 'e\\n'] == ['a\\n', 'b\\nc... 'd\\n', 'e\\n']\n  \n  At index 0 diff: '' != 'a\\n'\n  Left contains one more item: 'e\\n'\n  \n  Full diff:\n    [\n  +     '',\n        'a\\n',\n        'b\\n'\n        'c\\n',\n        'd\\n',\n        'e\\n',\n    ]\nFAILED tests/test_filesink_rotation.py::test_time_rotation[monday at 13:00-hours19] - AssertionError: assert ['', 'a\\n', '... 'd\\n', 'e\\n'] == ['a\\n', 'b\\nc... 'd\\n', 'e\\n']\n  \n  At index 0 diff: '' != 'a\\n'\n  Left contains one more item: 'e\\n'\n  \n  Full diff:\n    [\n  +     '',\n        'a\\n',\n        'b\\n'\n        'c\\n',\n        'd\\n',\n        'e\\n',\n    ]\n3 failed, 134 passed, 9 skipped in 1.47s\n"
+      },
+      "reference_solution": {
+        "rc": 0,
+        "tail": "........................................................................ [ 49%]\n.....................sssssssss.......................................... [ 98%]\n..                                                                       [100%]\n137 passed, 9 skipped in 1.37s\n"
+      }
+    },
+    "preexisting_tests": [
+      "tests/test_filesink_rotation.py"
+    ],
+    "test_command": ".eval-venv/bin/python -m pytest -q tests/test_filesink_rotation.py"
+  },
+  "status": "rejected",
+  "reason": "no failing test names could be extracted; the hidden patch only extends an existing parametrisation"
+}

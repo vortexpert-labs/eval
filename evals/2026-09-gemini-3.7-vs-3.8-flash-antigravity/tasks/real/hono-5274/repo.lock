@@ -1,0 +1,51 @@
+{
+  "task_id": "hono-5274",
+  "repo": "honojs/hono",
+  "pr": 5274,
+  "merged_at": "2026-08-23T07:34:05Z",
+  "base_sha": "4b44abe1b5c7755aac8555d7943611555183450b",
+  "head_sha": "05903550bb2feb8a226f0f8e07b306d11a747251",
+  "title": "fix(utils/stream): do not let abort listeners crash abort()",
+  "test_paths": [
+    "src/utils/stream.test.ts"
+  ],
+  "source_paths": [
+    "src/utils/stream.ts"
+  ],
+  "runnable_test_paths": [
+    "src/utils/stream.test.ts"
+  ],
+  "statement_source": "pr-title-only",
+  "leak_flags": [],
+  "failing_test_names": [
+    "src/utils/stream.test.ts::abort() continues when an abort listener throws",
+    "src/utils/stream.test.ts::abort() handles a rejecting thenable returned by a listener",
+    "src/utils/stream.test.ts::abort() does not leave an unhandled rejection when an async listener rejects"
+  ],
+  "verification": {
+    "accepted": true,
+    "reason": "",
+    "stages": {
+      "setup": {
+        "rc": 0
+      },
+      "base_without_hidden": {
+        "rc": 0,
+        "tail": "\n\u001b[1m\u001b[30m\u001b[46m RUN \u001b[49m\u001b[39m\u001b[22m \u001b[36mv4.1.9 \u001b[39m\u001b[90m<workspace-path>\u001b[39m\n      \u001b[2mCoverage enabled with \u001b[22m\u001b[33mv8\u001b[39m\n\n \u001b[32m\u2713\u001b[39m \u001b[30m\u001b[45m main \u001b[49m\u001b[39m src/utils/stream.test.ts \u001b[2m(\u001b[22m\u001b[2m11 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 59\u001b[2mms\u001b[22m\u001b[39m\n\n\u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m1 passed\u001b[39m\u001b[22m\u001b[90m (1)\u001b[39m\n\u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m11 passed\u001b[39m\u001b[22m\u001b[90m (11)\u001b[39m\n\u001b[2m   Start at \u001b[22m 01:44:05\n\u001b[2m   Duration \u001b[22m 423ms\u001b[2m (transform 63ms, setup 0ms, import 78ms, tests 59ms, environment 0ms)\u001b[22m\n\n\u001b[34m % \u001b[39m\u001b[2mCoverage report from \u001b[22m\u001b[33mv8\u001b[39m\n-----------|---------|----------|---------|---------|-------------------\nFile       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n-----------|---------|----------|---------|---------|-------------------\nAll files  |   94.28 |     87.5 |   84.61 |   96.96 |                   \n stream.ts |   94.28 |     87.5 |   84.61 |   96.96 | 66                \n-----------|---------|----------|---------|---------|-------------------\n\u001b[33mLoaded \u001b[7m\u001b[33m vitest@4.1.9 \u001b[33m\u001b[27m and \u001b[7m\u001b[33m @vitest/coverage-v8@4.1.7 \u001b[33m\u001b[27m.\nRunning mixed versions is not supported and may lead into bugs\nUpdate your dependencies and make sure the versions match.\u001b[39m\n"
+      },
+      "base_with_hidden": {
+        "rc": 1,
+        "tail": "167|\u001b[39m     api\u001b[33m.\u001b[39m\u001b[34monAbort\u001b[39m(handleAbort)\n\u001b[90m \u001b[2m\u276f\u001b[22m src/utils/stream.ts:\u001b[2m98:53\u001b[22m\u001b[39m\n\u001b[90m \u001b[2m\u276f\u001b[22m StreamingApi.abort src/utils/stream.ts:\u001b[2m98:29\u001b[22m\u001b[39m\n\u001b[90m \u001b[2m\u276f\u001b[22m src/utils/stream.test.ts:\u001b[2m168:9\u001b[22m\u001b[39m\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/2]\u23af\u001b[22m\u001b[39m\n\n\u001b[41m\u001b[1m FAIL \u001b[22m\u001b[49m \u001b[30m\u001b[45m main \u001b[49m\u001b[39m src/utils/stream.test.ts\u001b[2m > \u001b[22mStreamingApi\u001b[2m > \u001b[22mabort() does not leave an unhandled rejection when an async listener rejects\n\u001b[31m\u001b[1mAssertionError\u001b[22m: expected \"vi.fn()\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived:\n\n\u001b[1m  1st vi.fn() call:\n\n\u001b[22m    Array [\n      [Error: async cleanup failed],\n      Promise {},\n    ]\n\u001b[31m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[31m\u001b[39m\n\u001b[36m \u001b[2m\u276f\u001b[22m src/utils/stream.test.ts:\u001b[2m207:29\u001b[22m\u001b[39m\n    \u001b[90m205|\u001b[39m       \u001b[34mexpect\u001b[39m(api\u001b[33m.\u001b[39maborted)\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[35mtrue\u001b[39m)\n    \u001b[90m206|\u001b[39m       \u001b[35mawait\u001b[39m \u001b[35mnew\u001b[39m \u001b[33mPromise\u001b[39m((resolve) \u001b[33m=>\u001b[39m \u001b[34msetTimeout\u001b[39m(resolve\u001b[33m,\u001b[39m \u001b[34m0\u001b[39m))\n    \u001b[90m207|\u001b[39m       \u001b[34mexpect\u001b[39m(unhandled)\u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39m\u001b[34mtoHaveBeenCalled\u001b[39m()\n    \u001b[90m   |\u001b[39m                             \u001b[31m^\u001b[39m\n    \u001b[90m208|\u001b[39m     } \u001b[35mfinally\u001b[39m {\n    \u001b[90m209|\u001b[39m       process\u001b[33m.\u001b[39m\u001b[34moff\u001b[39m(\u001b[32m'unhandledRejection'\u001b[39m\u001b[33m,\u001b[39m unhandled)\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[2/2]\u23af\u001b[22m\u001b[39m\n\nerror: \"vitest\" exited with code 1\n"
+      },
+      "reference_solution": {
+        "rc": 0,
+        "tail": "\n\u001b[1m\u001b[30m\u001b[46m RUN \u001b[49m\u001b[39m\u001b[22m \u001b[36mv4.1.9 \u001b[39m\u001b[90m<workspace-path>\u001b[39m\n      \u001b[2mCoverage enabled with \u001b[22m\u001b[33mv8\u001b[39m\n\n \u001b[32m\u2713\u001b[39m \u001b[30m\u001b[45m main \u001b[49m\u001b[39m src/utils/stream.test.ts \u001b[2m(\u001b[22m\u001b[2m14 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 25\u001b[2mms\u001b[22m\u001b[39m\n\n\u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m1 passed\u001b[39m\u001b[22m\u001b[90m (1)\u001b[39m\n\u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m14 passed\u001b[39m\u001b[22m\u001b[90m (14)\u001b[39m\n\u001b[2m   Start at \u001b[22m 01:44:07\n\u001b[2m   Duration \u001b[22m 288ms\u001b[2m (transform 30ms, setup 0ms, import 40ms, tests 25ms, environment 0ms)\u001b[22m\n\n\u001b[34m % \u001b[39m\u001b[2mCoverage report from \u001b[22m\u001b[33mv8\u001b[39m\n-----------|---------|----------|---------|---------|-------------------\nFile       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n-----------|---------|----------|---------|---------|-------------------\nAll files  |   94.44 |     87.5 |   85.71 |   97.14 |                   \n stream.ts |   94.44 |     87.5 |   85.71 |   97.14 | 66                \n-----------|---------|----------|---------|---------|-------------------\n\u001b[33mLoaded \u001b[7m\u001b[33m vitest@4.1.9 \u001b[33m\u001b[27m and \u001b[7m\u001b[33m @vitest/coverage-v8@4.1.7 \u001b[33m\u001b[27m.\nRunning mixed versions is not supported and may lead into bugs\nUpdate your dependencies and make sure the versions match.\u001b[39m\n"
+      }
+    },
+    "preexisting_tests": [
+      "src/utils/stream.test.ts"
+    ],
+    "test_command": "bun run vitest --run src/utils/stream.test.ts"
+  },
+  "status": "accepted"
+}

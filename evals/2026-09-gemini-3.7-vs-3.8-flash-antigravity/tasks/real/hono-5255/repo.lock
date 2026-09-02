@@ -1,0 +1,53 @@
+{
+  "task_id": "hono-5255",
+  "repo": "honojs/hono",
+  "pr": 5255,
+  "merged_at": "2026-08-22T05:55:00Z",
+  "base_sha": "eea9735fe308e6549509c312d80e13cd9e18898b",
+  "head_sha": "1d30eb13202090c20f09baee32d6a53cf15eda7a",
+  "title": "fix(accepts): support wildcard media types and specificity ordering in defaultMatch",
+  "test_paths": [
+    "src/helper/accepts/accepts.test.ts"
+  ],
+  "source_paths": [
+    "src/helper/accepts/accepts.ts"
+  ],
+  "runnable_test_paths": [
+    "src/helper/accepts/accepts.test.ts"
+  ],
+  "statement_source": "pr-title-only",
+  "leak_flags": [],
+  "failing_test_names": [
+    "src/helper/accepts/accepts.test.ts::should match wildcard subtype application/*",
+    "src/helper/accepts/accepts.test.ts::should return default support for global wildcard */*",
+    "src/helper/accepts/accepts.test.ts::should return default support for single asterisk wildcard *",
+    "src/helper/accepts/accepts.test.ts::should prefer exact match over wildcard match at same quality factor",
+    "src/helper/accepts/accepts.test.ts::should match subtype wildcard while global wildcard falls through to default"
+  ],
+  "verification": {
+    "accepted": true,
+    "reason": "",
+    "stages": {
+      "setup": {
+        "rc": 0
+      },
+      "base_without_hidden": {
+        "rc": 0,
+        "tail": "     80 |       50 |     100 |   78.78 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  router.ts        |      80 |       50 |     100 |   78.78 | 15,23,40-43,54,65 \n ...er/trie-router |    6.89 |        0 |       0 |    7.47 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  node.ts          |     5.4 |        0 |       0 |    5.88 | 29-214            \n  router.ts        |      40 |        0 |       0 |      40 | 10-16             \n src/utils         |    29.5 |    19.77 |   18.03 |   29.89 |                   \n  accept.ts        |   64.42 |     54.2 |      80 |   64.18 | ...53,256,259,262 \n  body.ts          |    7.54 |        0 |       0 |    7.69 | ...99-209,226-245 \n  buffer.ts        |      12 |        0 |       0 |   12.24 | ...99-103,110-116 \n  constants.ts     |     100 |      100 |     100 |     100 |                   \n  crypto.ts        |   16.66 |        0 |       0 |   16.66 | ...24,28-30,36-57 \n  html.ts          |    8.64 |        0 |       0 |    8.97 | ...30-139,149-180 \n  url.ts           |   21.08 |     9.73 |      15 |   21.67 | ...16,226-299,314 \n-------------------|---------|----------|---------|---------|-------------------\n\u001b[33mLoaded \u001b[7m\u001b[33m vitest@4.1.9 \u001b[33m\u001b[27m and \u001b[7m\u001b[33m @vitest/coverage-v8@4.1.7 \u001b[33m\u001b[27m.\nRunning mixed versions is not supported and may lead into bugs\nUpdate your dependencies and make sure the versions match.\u001b[39m\n"
+      },
+      "base_with_hidden": {
+        "rc": 1,
+        "tail": "pe application/*\n\u001b[31m\u001b[1mAssertionError\u001b[22m: expected 'text/html' to be 'application/json' // Object.is equality\u001b[39m\n\nExpected: \u001b[32m\"application/json\"\u001b[39m\nReceived: \u001b[31m\"text/html\"\u001b[39m\n\n\u001b[36m \u001b[2m\u276f\u001b[22m src/helper/accepts/accepts.test.ts:\u001b[2m86:20\u001b[22m\u001b[39m\n    \u001b[90m 84|\u001b[39m     }\n    \u001b[90m 85|\u001b[39m     \u001b[35mconst\u001b[39m result \u001b[33m=\u001b[39m \u001b[34maccepts\u001b[39m(c\u001b[33m,\u001b[39m options)\n    \u001b[90m 86|\u001b[39m     \u001b[34mexpect\u001b[39m(result)\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[32m'application/json'\u001b[39m)\n    \u001b[90m   |\u001b[39m                    \u001b[31m^\u001b[39m\n    \u001b[90m 87|\u001b[39m   })\n    \u001b[90m 88|\u001b[39m\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/2]\u23af\u001b[22m\u001b[39m\n\n\u001b[41m\u001b[1m FAIL \u001b[22m\u001b[49m \u001b[30m\u001b[45m main \u001b[49m\u001b[39m src/helper/accepts/accepts.test.ts\u001b[2m > \u001b[22maccepts\u001b[2m > \u001b[22mshould match subtype wildcard while global wildcard falls through to default\n\u001b[31m\u001b[1mAssertionError\u001b[22m: expected 'application/json' to be 'text/plain' // Object.is equality\u001b[39m\n\nExpected: \u001b[32m\"\u001b[7mtext/plai\u001b[27mn\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mapplication/jso\u001b[27mn\"\u001b[39m\n\n\u001b[36m \u001b[2m\u276f\u001b[22m src/helper/accepts/accepts.test.ts:\u001b[2m150:20\u001b[22m\u001b[39m\n    \u001b[90m148|\u001b[39m     }\n    \u001b[90m149|\u001b[39m     \u001b[35mconst\u001b[39m result \u001b[33m=\u001b[39m \u001b[34maccepts\u001b[39m(c\u001b[33m,\u001b[39m options)\n    \u001b[90m150|\u001b[39m     \u001b[34mexpect\u001b[39m(result)\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[32m'text/plain'\u001b[39m)\n    \u001b[90m   |\u001b[39m                    \u001b[31m^\u001b[39m\n    \u001b[90m151|\u001b[39m   })\n    \u001b[90m152|\u001b[39m\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[2/2]\u23af\u001b[22m\u001b[39m\n\nerror: \"vitest\" exited with code 1\n"
+      },
+      "reference_solution": {
+        "rc": 0,
+        "tail": "     80 |       50 |     100 |   78.78 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  router.ts        |      80 |       50 |     100 |   78.78 | 15,23,40-43,54,65 \n ...er/trie-router |    6.89 |        0 |       0 |    7.47 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  node.ts          |     5.4 |        0 |       0 |    5.88 | 29-214            \n  router.ts        |      40 |        0 |       0 |      40 | 10-16             \n src/utils         |    29.7 |    20.05 |   18.03 |    30.1 |                   \n  accept.ts        |    65.1 |    55.14 |      80 |   64.86 | ...53,256,259,262 \n  body.ts          |    7.54 |        0 |       0 |    7.69 | ...99-209,226-245 \n  buffer.ts        |      12 |        0 |       0 |   12.24 | ...99-103,110-116 \n  constants.ts     |     100 |      100 |     100 |     100 |                   \n  crypto.ts        |   16.66 |        0 |       0 |   16.66 | ...24,28-30,36-57 \n  html.ts          |    8.64 |        0 |       0 |    8.97 | ...30-139,149-180 \n  url.ts           |   21.08 |     9.73 |      15 |   21.67 | ...16,226-299,314 \n-------------------|---------|----------|---------|---------|-------------------\n\u001b[33mLoaded \u001b[7m\u001b[33m vitest@4.1.9 \u001b[33m\u001b[27m and \u001b[7m\u001b[33m @vitest/coverage-v8@4.1.7 \u001b[33m\u001b[27m.\nRunning mixed versions is not supported and may lead into bugs\nUpdate your dependencies and make sure the versions match.\u001b[39m\n"
+      }
+    },
+    "preexisting_tests": [
+      "src/helper/accepts/accepts.test.ts"
+    ],
+    "test_command": "bun run vitest --run src/helper/accepts/accepts.test.ts"
+  },
+  "status": "accepted"
+}

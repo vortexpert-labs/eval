@@ -1,0 +1,536 @@
+{
+  "accepted": [
+    {
+      "task_id": "click-3805",
+      "repo": "pallets/click",
+      "pr": 3805,
+      "merged_at": "2026-08-29T15:12:36Z",
+      "base_sha": "3cbcf9b11546f4cf10b36d3e2e531733ba6fe001",
+      "head_sha": "f58ca3e81424a35626c8a475eb59ab95589008ce",
+      "title": "Fix `copy`, `deepcopy` and `pickle` of `Sentinel` members",
+      "test_paths": [
+        "tests/test_utils/test_sentinel.py"
+      ],
+      "source_paths": [
+        "src/click/_utils.py"
+      ],
+      "runnable_test_paths": [
+        "tests/test_utils/test_sentinel.py"
+      ],
+      "statement_source": "pr-title-only",
+      "leak_flags": [],
+      "failing_test_names": [
+        "tests/test_utils/test_sentinel.py::test_sentinel_duplication_preserves_identity",
+        "tests/test_utils/test_sentinel.py::test_parameter_duplication"
+      ],
+      "verification": {
+        "accepted": true,
+        "reason": "",
+        "stages": {
+          "setup": {
+            "rc": 0
+          },
+          "base_without_hidden": {
+            "rc": 0,
+            "tail": ".                                                                        [100%]\n1 passed in 0.02s\n"
+          },
+          "base_with_hidden": {
+            "rc": 1,
+            "tail": "      #\n        # still not found -- try _missing_ hook\n        try:\n            exc = None\n            result = cls._missing_(value)\n        except Exception as e:\n            exc = e\n            result = None\n        try:\n            if isinstance(result, cls):\n                return result\n            elif (\n                    Flag is not None and issubclass(cls, Flag)\n                    and cls._boundary_ is EJECT and isinstance(result, int)\n                ):\n                return result\n            else:\n                ve_exc = ValueError(\"%r is not a valid %s\" % (value, cls.__qualname__))\n                if result is None and exc is None:\n>                   raise ve_exc\nE                   ValueError: <object object at 0x109e04330> is not a valid Sentinel\n\n../../../../../.local/share/mise/installs/python/3.12.14/lib/python3.12/enum.py:1170: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_utils/test_sentinel.py::test_sentinel_duplication_preserves_identity[pickle-Sentinel.UNSET] - ValueError: <object object at 0x108e4e040> is not a valid Sentinel\nFAILED tests/test_utils/test_sentinel.py::test_sentinel_duplication_preserves_identity[pickle-Sentinel.FLAG_NEEDS_VALUE] - ValueError: <object object at 0x108e4e3e0> is not a valid Sentinel\nFAILED tests/test_utils/test_sentinel.py::test_parameter_duplication[pickle] - ValueError: <object object at 0x109e04330> is not a valid Sentinel\n3 failed, 7 passed in 0.17s\n"
+          },
+          "reference_solution": {
+            "rc": 0,
+            "tail": "..........                                                               [100%]\n10 passed in 0.03s\n"
+          }
+        },
+        "preexisting_tests": [
+          "tests/test_utils/test_sentinel.py"
+        ],
+        "test_command": ".eval-venv/bin/python -m pytest -p no:randomly -q tests/test_utils/test_sentinel.py"
+      },
+      "status": "accepted"
+    },
+    {
+      "task_id": "click-3769",
+      "repo": "pallets/click",
+      "pr": 3769,
+      "merged_at": "2026-08-15T17:56:58Z",
+      "base_sha": "8b44edfff7d9a6c895fa804148c16b3a0bc9efb5",
+      "head_sha": "f316d5cb3aa89b57c14aee54da6ac9062ac5bec4",
+      "title": "Settles progress bar on its final position",
+      "test_paths": [
+        "tests/test_termui.py"
+      ],
+      "source_paths": [
+        "src/click/_termui_impl.py"
+      ],
+      "runnable_test_paths": [
+        "tests/test_termui.py"
+      ],
+      "statement_source": "issue#3571",
+      "leak_flags": [],
+      "failing_test_names": [
+        "tests/test_termui.py::test_progressbar_lands_on_final_position"
+      ],
+      "verification": {
+        "accepted": true,
+        "reason": "",
+        "stages": {
+          "setup": {
+            "rc": 0
+          },
+          "base_without_hidden": {
+            "rc": 0,
+            "tail": "............................................sssssssssssssssssssss....... [ 29%]\n.........ss............................................................. [ 58%]\n........................................................................ [ 87%]\n................................                                         [100%]\n225 passed, 23 skipped in 0.57s\n"
+          },
+          "base_with_hidden": {
+            "rc": 1,
+            "tail": "ength=20, show_pos=True, update_min_steps=update_min_steps, file=stream\n            ) as bar:\n                for _ in range(20):\n                    bar.update(1)\n    \n>       assert bar.pos == 20\nE       assert 0 == 20\nE        +  where 0 = <click._termui_impl.ProgressBar object at 0x1063b1cd0>.pos\n\ntests/test_termui.py:135: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_termui.py::test_progressbar_lands_on_final_position[iterate-3] - assert 18 == 20\n +  where 18 = <click._termui_impl.ProgressBar object at 0x1063b11c0>.pos\nFAILED tests/test_termui.py::test_progressbar_lands_on_final_position[iterate-7] - assert 14 == 20\n +  where 14 = <click._termui_impl.ProgressBar object at 0x1063b3830>.pos\nFAILED tests/test_termui.py::test_progressbar_lands_on_final_position[iterate-25] - assert 0 == 20\n +  where 0 = <click._termui_impl.ProgressBar object at 0x1063b1df0>.pos\nFAILED tests/test_termui.py::test_progressbar_lands_on_final_position[update-3] - assert 18 == 20\n +  where 18 = <click._termui_impl.ProgressBar object at 0x10634f1d0>.pos\nFAILED tests/test_termui.py::test_progressbar_lands_on_final_position[update-7] - assert 14 == 20\n +  where 14 = <click._termui_impl.ProgressBar object at 0x10634c680>.pos\nFAILED tests/test_termui.py::test_progressbar_lands_on_final_position[update-25] - assert 0 == 20\n +  where 0 = <click._termui_impl.ProgressBar object at 0x1063b1cd0>.pos\n6 failed, 231 passed, 23 skipped in 0.75s\n"
+          },
+          "reference_solution": {
+            "rc": 0,
+            "tail": "........................................................ssssssssssssssss [ 27%]\nsssss................ss................................................. [ 55%]\n........................................................................ [ 83%]\n............................................                             [100%]\n237 passed, 23 skipped in 0.50s\n"
+          }
+        },
+        "preexisting_tests": [
+          "tests/test_termui.py"
+        ],
+        "test_command": ".eval-venv/bin/python -m pytest -p no:randomly -q tests/test_termui.py"
+      },
+      "status": "accepted"
+    },
+    {
+      "task_id": "click-3781",
+      "repo": "pallets/click",
+      "pr": 3781,
+      "merged_at": "2026-08-20T02:50:20Z",
+      "base_sha": "2103e157683c5e4cadc8ee1838df526a54bde9a4",
+      "head_sha": "a1d87858abd77fa8e3ffc204670ccd75b96c4781",
+      "title": "Add support of `pathlib.Path` to `edit`",
+      "test_paths": [
+        "tests/test_termui.py",
+        "tests/typing/typing_edit.py"
+      ],
+      "source_paths": [
+        "src/click/_termui_impl.py",
+        "src/click/termui.py"
+      ],
+      "runnable_test_paths": [
+        "tests/test_termui.py"
+      ],
+      "statement_source": "issue#2869",
+      "leak_flags": [],
+      "failing_test_names": [
+        "tests/test_termui.py::test_edit_pathlib"
+      ],
+      "verification": {
+        "accepted": true,
+        "reason": "",
+        "stages": {
+          "setup": {
+            "rc": 0
+          },
+          "base_without_hidden": {
+            "rc": 0,
+            "tail": "........................................................ssssssssssssssss [ 25%]\nsssss................ss................................................. [ 51%]\n........................................................................ [ 77%]\n................................................................         [100%]\n257 passed, 23 skipped in 0.66s\n"
+          },
+          "base_with_hidden": {
+            "rc": 1,
+            "tail": " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsrc/click/termui.py:898: in edit\n    ed.edit_files(filenames=filename)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <click._termui_impl.Editor object at 0x1056e0fb0>\nfilenames = PosixPath('/private/var/folders/33/5t46t6xn059_j8q1rhs634sh0000gn/T/pytest-of-<user>/pytest-43/test_edit_pathlib_single_0/file.txt')\n\n    def edit_files(self, filenames: cabc.Iterable[str]) -> None:\n        \"\"\"Open files in the user's editor.\"\"\"\n        import shlex\n        import subprocess\n    \n        editor = self.get_editor()\n        environ: dict[str, str] | None = None\n    \n        if self.env:\n            environ = os.environ.copy()\n            environ.update(self.env)\n    \n        try:\n            # Split in POSIX mode (the default) for the same reasons as\n            # in pager(): strips quotes from tokens and preserves quoted\n            # Windows paths.\n            c = subprocess.Popen(\n>               args=shlex.split(editor) + list(filenames),\n                                           ^^^^^^^^^^^^^^^\n                env=environ,\n            )\nE           TypeError: 'PosixPath' object is not iterable\n\nsrc/click/_termui_impl.py:730: TypeError\n=========================== short test summary info ============================\nFAILED tests/test_termui.py::test_edit_pathlib[single] - TypeError: 'PosixPath' object is not iterable\n1 failed, 258 passed, 23 skipped in 0.71s\n"
+          },
+          "reference_solution": {
+            "rc": 0,
+            "tail": "........................................................ssssssssssssssss [ 25%]\nsssss..................ss............................................... [ 51%]\n........................................................................ [ 76%]\n..................................................................       [100%]\n259 passed, 23 skipped in 0.57s\n"
+          }
+        },
+        "preexisting_tests": [
+          "tests/test_termui.py"
+        ],
+        "test_command": ".eval-venv/bin/python -m pytest -p no:randomly -q tests/test_termui.py"
+      },
+      "status": "accepted"
+    },
+    {
+      "task_id": "loguru-1510",
+      "repo": "Delgan/loguru",
+      "pr": 1510,
+      "merged_at": "2026-08-30T16:20:05Z",
+      "base_sha": "d3c590573edb41884feb206823a47c3a9e14aa68",
+      "head_sha": "032a99677620c00b4e7c6e154bc965dbd2e16400",
+      "title": "Fix \"@logger.catch()\" ignoring errors raised by \"athrow()\"",
+      "test_paths": [
+        "tests/exceptions/output/modern/exception_formatting_async_generator_throw.txt",
+        "tests/exceptions/source/modern/decorate_async_generator.py",
+        "tests/exceptions/source/modern/exception_formatting_async_generator_throw.py",
+        "tests/test_exceptions_formatting.py"
+      ],
+      "source_paths": [
+        "loguru/_logger.py"
+      ],
+      "runnable_test_paths": [
+        "tests/test_exceptions_formatting.py"
+      ],
+      "statement_source": "issue#1503",
+      "leak_flags": [],
+      "failing_test_names": [
+        "tests/exceptions/source/modern/decorate_async_generator.py::test_decorate_async_generator_then_async_throw_with_handled_error"
+      ],
+      "verification": {
+        "accepted": true,
+        "reason": "",
+        "stages": {
+          "setup": {
+            "rc": 0
+          },
+          "base_without_hidden": {
+            "rc": 0,
+            "tail": "........................................................................ [ 71%]\n........................ss...                                            [100%]\n99 passed, 2 skipped in 10.90s\n"
+          },
+          "base_with_hidden": {
+            "rc": 1,
+            "tail": "         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<HOME>/.local/share/mise/installs/python/3.12.14/lib/python3.12/asyncio/base_events.py\", line 691, in run_until_complete\n    return future.result()\n           ^^^^^^^^^^^^^^^\n  File \"<workspace-path>\", line 95, in coro\n    await gen.athrow(ValueError)\n  File \"<workspace-path>\", line 1361, in athrow\n    return await self._gen.athrow(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<workspace-path>\", line 88, in generator\n    yield x\nValueError\n\n=========================== short test summary info ============================\nFAILED tests/test_exceptions_formatting.py::test_exception_modern[exception_formatting_async_generator_throw-minimum_python_version2] - AssertionError: assert 1 == 0\n +  where 1 = <Popen: returncode: 1 args: ['<workspace-path>>.returncode\nFAILED tests/test_exceptions_formatting.py::test_exception_modern[decorate_async_generator-minimum_python_version3] - AssertionError: assert 1 == 0\n +  where 1 = <Popen: returncode: 1 args: ['<workspace-path>>.returncode\n2 failed, 98 passed, 2 skipped in 10.92s\n"
+          },
+          "reference_solution": {
+            "rc": 0,
+            "tail": "........................................................................ [ 70%]\n.........................ss...                                           [100%]\n100 passed, 2 skipped in 11.15s\n"
+          }
+        },
+        "preexisting_tests": [
+          "tests/test_exceptions_formatting.py"
+        ],
+        "test_command": ".eval-venv/bin/python -m pytest -q tests/test_exceptions_formatting.py"
+      },
+      "status": "accepted"
+    },
+    {
+      "task_id": "hono-5255",
+      "repo": "honojs/hono",
+      "pr": 5255,
+      "merged_at": "2026-08-22T05:55:00Z",
+      "base_sha": "eea9735fe308e6549509c312d80e13cd9e18898b",
+      "head_sha": "1d30eb13202090c20f09baee32d6a53cf15eda7a",
+      "title": "fix(accepts): support wildcard media types and specificity ordering in defaultMatch",
+      "test_paths": [
+        "src/helper/accepts/accepts.test.ts"
+      ],
+      "source_paths": [
+        "src/helper/accepts/accepts.ts"
+      ],
+      "runnable_test_paths": [
+        "src/helper/accepts/accepts.test.ts"
+      ],
+      "statement_source": "pr-title-only",
+      "leak_flags": [],
+      "failing_test_names": [
+        "src/helper/accepts/accepts.test.ts::should match wildcard subtype application/*",
+        "src/helper/accepts/accepts.test.ts::should return default support for global wildcard */*",
+        "src/helper/accepts/accepts.test.ts::should return default support for single asterisk wildcard *",
+        "src/helper/accepts/accepts.test.ts::should prefer exact match over wildcard match at same quality factor",
+        "src/helper/accepts/accepts.test.ts::should match subtype wildcard while global wildcard falls through to default"
+      ],
+      "verification": {
+        "accepted": true,
+        "reason": "",
+        "stages": {
+          "setup": {
+            "rc": 0
+          },
+          "base_without_hidden": {
+            "rc": 0,
+            "tail": "     80 |       50 |     100 |   78.78 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  router.ts        |      80 |       50 |     100 |   78.78 | 15,23,40-43,54,65 \n ...er/trie-router |    6.89 |        0 |       0 |    7.47 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  node.ts          |     5.4 |        0 |       0 |    5.88 | 29-214            \n  router.ts        |      40 |        0 |       0 |      40 | 10-16             \n src/utils         |    29.5 |    19.77 |   18.03 |   29.89 |                   \n  accept.ts        |   64.42 |     54.2 |      80 |   64.18 | ...53,256,259,262 \n  body.ts          |    7.54 |        0 |       0 |    7.69 | ...99-209,226-245 \n  buffer.ts        |      12 |        0 |       0 |   12.24 | ...99-103,110-116 \n  constants.ts     |     100 |      100 |     100 |     100 |                   \n  crypto.ts        |   16.66 |        0 |       0 |   16.66 | ...24,28-30,36-57 \n  html.ts          |    8.64 |        0 |       0 |    8.97 | ...30-139,149-180 \n  url.ts           |   21.08 |     9.73 |      15 |   21.67 | ...16,226-299,314 \n-------------------|---------|----------|---------|---------|-------------------\n\u001b[33mLoaded \u001b[7m\u001b[33m vitest@4.1.9 \u001b[33m\u001b[27m and \u001b[7m\u001b[33m @vitest/coverage-v8@4.1.7 \u001b[33m\u001b[27m.\nRunning mixed versions is not supported and may lead into bugs\nUpdate your dependencies and make sure the versions match.\u001b[39m\n"
+          },
+          "base_with_hidden": {
+            "rc": 1,
+            "tail": "pe application/*\n\u001b[31m\u001b[1mAssertionError\u001b[22m: expected 'text/html' to be 'application/json' // Object.is equality\u001b[39m\n\nExpected: \u001b[32m\"application/json\"\u001b[39m\nReceived: \u001b[31m\"text/html\"\u001b[39m\n\n\u001b[36m \u001b[2m\u276f\u001b[22m src/helper/accepts/accepts.test.ts:\u001b[2m86:20\u001b[22m\u001b[39m\n    \u001b[90m 84|\u001b[39m     }\n    \u001b[90m 85|\u001b[39m     \u001b[35mconst\u001b[39m result \u001b[33m=\u001b[39m \u001b[34maccepts\u001b[39m(c\u001b[33m,\u001b[39m options)\n    \u001b[90m 86|\u001b[39m     \u001b[34mexpect\u001b[39m(result)\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[32m'application/json'\u001b[39m)\n    \u001b[90m   |\u001b[39m                    \u001b[31m^\u001b[39m\n    \u001b[90m 87|\u001b[39m   })\n    \u001b[90m 88|\u001b[39m\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/2]\u23af\u001b[22m\u001b[39m\n\n\u001b[41m\u001b[1m FAIL \u001b[22m\u001b[49m \u001b[30m\u001b[45m main \u001b[49m\u001b[39m src/helper/accepts/accepts.test.ts\u001b[2m > \u001b[22maccepts\u001b[2m > \u001b[22mshould match subtype wildcard while global wildcard falls through to default\n\u001b[31m\u001b[1mAssertionError\u001b[22m: expected 'application/json' to be 'text/plain' // Object.is equality\u001b[39m\n\nExpected: \u001b[32m\"\u001b[7mtext/plai\u001b[27mn\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mapplication/jso\u001b[27mn\"\u001b[39m\n\n\u001b[36m \u001b[2m\u276f\u001b[22m src/helper/accepts/accepts.test.ts:\u001b[2m150:20\u001b[22m\u001b[39m\n    \u001b[90m148|\u001b[39m     }\n    \u001b[90m149|\u001b[39m     \u001b[35mconst\u001b[39m result \u001b[33m=\u001b[39m \u001b[34maccepts\u001b[39m(c\u001b[33m,\u001b[39m options)\n    \u001b[90m150|\u001b[39m     \u001b[34mexpect\u001b[39m(result)\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[32m'text/plain'\u001b[39m)\n    \u001b[90m   |\u001b[39m                    \u001b[31m^\u001b[39m\n    \u001b[90m151|\u001b[39m   })\n    \u001b[90m152|\u001b[39m\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[2/2]\u23af\u001b[22m\u001b[39m\n\nerror: \"vitest\" exited with code 1\n"
+          },
+          "reference_solution": {
+            "rc": 0,
+            "tail": "     80 |       50 |     100 |   78.78 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  router.ts        |      80 |       50 |     100 |   78.78 | 15,23,40-43,54,65 \n ...er/trie-router |    6.89 |        0 |       0 |    7.47 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  node.ts          |     5.4 |        0 |       0 |    5.88 | 29-214            \n  router.ts        |      40 |        0 |       0 |      40 | 10-16             \n src/utils         |    29.7 |    20.05 |   18.03 |    30.1 |                   \n  accept.ts        |    65.1 |    55.14 |      80 |   64.86 | ...53,256,259,262 \n  body.ts          |    7.54 |        0 |       0 |    7.69 | ...99-209,226-245 \n  buffer.ts        |      12 |        0 |       0 |   12.24 | ...99-103,110-116 \n  constants.ts     |     100 |      100 |     100 |     100 |                   \n  crypto.ts        |   16.66 |        0 |       0 |   16.66 | ...24,28-30,36-57 \n  html.ts          |    8.64 |        0 |       0 |    8.97 | ...30-139,149-180 \n  url.ts           |   21.08 |     9.73 |      15 |   21.67 | ...16,226-299,314 \n-------------------|---------|----------|---------|---------|-------------------\n\u001b[33mLoaded \u001b[7m\u001b[33m vitest@4.1.9 \u001b[33m\u001b[27m and \u001b[7m\u001b[33m @vitest/coverage-v8@4.1.7 \u001b[33m\u001b[27m.\nRunning mixed versions is not supported and may lead into bugs\nUpdate your dependencies and make sure the versions match.\u001b[39m\n"
+          }
+        },
+        "preexisting_tests": [
+          "src/helper/accepts/accepts.test.ts"
+        ],
+        "test_command": "bun run vitest --run src/helper/accepts/accepts.test.ts"
+      },
+      "status": "accepted"
+    },
+    {
+      "task_id": "hono-5236",
+      "repo": "honojs/hono",
+      "pr": 5236,
+      "merged_at": "2026-08-17T00:37:48Z",
+      "base_sha": "41bdc4288ed7023c24d35f32bd065bd963435e3e",
+      "head_sha": "7c7958f015f8206128aa28550f809fdd03623767",
+      "title": "fix(trie-router): match suffix wildcard routes",
+      "test_paths": [
+        "src/hono.test.ts",
+        "src/router/trie-router/node.test.ts"
+      ],
+      "source_paths": [
+        "src/router/trie-router/node.ts",
+        "src/router/trie-router/router.ts"
+      ],
+      "runnable_test_paths": [
+        "src/hono.test.ts",
+        "src/router/trie-router/node.test.ts"
+      ],
+      "statement_source": "issue#5219",
+      "leak_flags": [],
+      "failing_test_names": [
+        "src/hono.test.ts::Should match a suffix wildcard after falling back to TrieRouter",
+        "src/router/trie-router/node.test.ts::does not match a shorter prefix",
+        "src/router/trie-router/node.test.ts::treats regular expression characters in the prefix literally",
+        "src/router/trie-router/node.test.ts::registers the pattern when its child already exists"
+      ],
+      "verification": {
+        "accepted": true,
+        "reason": "",
+        "stages": {
+          "setup": {
+            "rc": 0
+          },
+          "base_without_hidden": {
+            "rc": 0,
+            "tail": "on/Developer/temp/agyeval-work/wt/verify-hono-5236/\u001b[39msrc/hono-base.ts:510:17\u001b[90m)\u001b[39m\n\n\u001b[90mstderr\u001b[2m | src/hono.test.ts\u001b[2m > \u001b[22m\u001b[2mError handling in middleware\u001b[2m > \u001b[22m\u001b[2mShould handle the error in middleware - async\n\u001b[22m\u001b[39mError: Error message\n    at \u001b[90m<workspace-path>/\u001b[39msrc/hono.test.ts:1585:11\n    at dispatch \u001b[90m(<workspace-path>/\u001b[39msrc/compose.ts:51:23\u001b[90m)\u001b[39m\n    at \u001b[90m<workspace-path>/\u001b[39msrc/compose.ts:51:46\n    at \u001b[90m<workspace-path>/\u001b[39msrc/hono.test.ts:1570:11\n    at dispatch \u001b[90m(<workspace-path>/\u001b[39msrc/compose.ts:51:23\u001b[90m)\u001b[39m\n    at \u001b[90m<workspace-path>/\u001b[39msrc/compose.ts:23:12\n    at \u001b[90m<workspace-path>/\u001b[39msrc/hono-base.ts:455:31\n    at Hono.#dispatch \u001b[90m(<workspace-path>/\u001b[39msrc/hono-base.ts:466:5\u001b[90m)\u001b[39m\n    at Hono.fetch \u001b[90m(<workspace-path>/\u001b[39msrc/hono-base.ts:485:17\u001b[90m)\u001b[39m\n    at Hono.request \u001b[90m(<workspace-path>/\u001b[39msrc/hono-base.ts:510:17\u001b[90m)\u001b[39m\n\n"
+          },
+          "base_with_hidden": {
+            "rc": 1,
+            "tail": "'\u001b[39m)[\u001b[34m0\u001b[39m])\u001b[33m.\u001b[39m\u001b[34mtoEqual\u001b[39m([[\u001b[32m'file'\u001b[39m\u001b[33m,\u001b[39m {}]])\n    \u001b[90m   |\u001b[39m                                                \u001b[31m^\u001b[39m\n    \u001b[90m 56|\u001b[39m     \u001b[34mexpect\u001b[39m(node\u001b[33m.\u001b[39m\u001b[34msearch\u001b[39m(\u001b[32m'get'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'/fileZZjs'\u001b[39m)[\u001b[34m0\u001b[39m])\u001b[33m.\u001b[39m\u001b[34mtoEqual\u001b[39m([])\n    \u001b[90m 57|\u001b[39m   })\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[3/6]\u23af\u001b[22m\u001b[39m\n\n\u001b[41m\u001b[1m FAIL \u001b[22m\u001b[49m \u001b[30m\u001b[45m main \u001b[49m\u001b[39m src/router/trie-router/node.test.ts\u001b[2m > \u001b[22mGet with a suffix wildcard\u001b[2m > \u001b[22mregisters the pattern when its child already exists\n\u001b[31m\u001b[1mAssertionError\u001b[22m: expected [] to deeply equal [ [ 'assets', {} ] ]\u001b[39m\n\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\n\u001b[32m- [\u001b[39m\n\u001b[32m-   [\u001b[39m\n\u001b[32m-     \"assets\",\u001b[39m\n\u001b[32m-     {},\u001b[39m\n\u001b[32m-   ],\u001b[39m\n\u001b[32m- ]\u001b[39m\n\u001b[31m+ []\u001b[39m\n\n\u001b[36m \u001b[2m\u276f\u001b[22m src/router/trie-router/node.test.ts:\u001b[2m63:53\u001b[22m\u001b[39m\n    \u001b[90m 61|\u001b[39m     node\u001b[33m.\u001b[39m\u001b[34minsert\u001b[39m(\u001b[32m'get'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'/assets*/x'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'literal'\u001b[39m)\n    \u001b[90m 62|\u001b[39m     node\u001b[33m.\u001b[39m\u001b[34minsert\u001b[39m(\u001b[32m'get'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'/assets*'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'assets'\u001b[39m)\n    \u001b[90m 63|\u001b[39m     expect(node.search('get', '/assets/app.js')[0]).toEqual([['assets'\u2026\n    \u001b[90m   |\u001b[39m                                                     \u001b[31m^\u001b[39m\n    \u001b[90m 64|\u001b[39m   })\n    \u001b[90m 65|\u001b[39m })\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[4/6]\u23af\u001b[22m\u001b[39m\n\nerror: \"vitest\" exited with code 1\n"
+          },
+          "reference_solution": {
+            "rc": 0,
+            "tail": "on/Developer/temp/agyeval-work/wt/verify-hono-5236/\u001b[39msrc/hono-base.ts:510:17\u001b[90m)\u001b[39m\n\n\u001b[90mstderr\u001b[2m | src/hono.test.ts\u001b[2m > \u001b[22m\u001b[2mError handling in middleware\u001b[2m > \u001b[22m\u001b[2mShould handle the error in middleware - async\n\u001b[22m\u001b[39mError: Error message\n    at \u001b[90m<workspace-path>/\u001b[39msrc/hono.test.ts:1599:11\n    at dispatch \u001b[90m(<workspace-path>/\u001b[39msrc/compose.ts:51:23\u001b[90m)\u001b[39m\n    at \u001b[90m<workspace-path>/\u001b[39msrc/compose.ts:51:46\n    at \u001b[90m<workspace-path>/\u001b[39msrc/hono.test.ts:1584:11\n    at dispatch \u001b[90m(<workspace-path>/\u001b[39msrc/compose.ts:51:23\u001b[90m)\u001b[39m\n    at \u001b[90m<workspace-path>/\u001b[39msrc/compose.ts:23:12\n    at \u001b[90m<workspace-path>/\u001b[39msrc/hono-base.ts:455:31\n    at Hono.#dispatch \u001b[90m(<workspace-path>/\u001b[39msrc/hono-base.ts:466:5\u001b[90m)\u001b[39m\n    at Hono.fetch \u001b[90m(<workspace-path>/\u001b[39msrc/hono-base.ts:485:17\u001b[90m)\u001b[39m\n    at Hono.request \u001b[90m(<workspace-path>/\u001b[39msrc/hono-base.ts:510:17\u001b[90m)\u001b[39m\n\n"
+          }
+        },
+        "preexisting_tests": [
+          "src/hono.test.ts",
+          "src/router/trie-router/node.test.ts"
+        ],
+        "test_command": "bun run vitest --run src/hono.test.ts src/router/trie-router/node.test.ts"
+      },
+      "status": "accepted"
+    },
+    {
+      "task_id": "hono-5274",
+      "repo": "honojs/hono",
+      "pr": 5274,
+      "merged_at": "2026-08-23T07:34:05Z",
+      "base_sha": "4b44abe1b5c7755aac8555d7943611555183450b",
+      "head_sha": "05903550bb2feb8a226f0f8e07b306d11a747251",
+      "title": "fix(utils/stream): do not let abort listeners crash abort()",
+      "test_paths": [
+        "src/utils/stream.test.ts"
+      ],
+      "source_paths": [
+        "src/utils/stream.ts"
+      ],
+      "runnable_test_paths": [
+        "src/utils/stream.test.ts"
+      ],
+      "statement_source": "pr-title-only",
+      "leak_flags": [],
+      "failing_test_names": [
+        "src/utils/stream.test.ts::abort() continues when an abort listener throws",
+        "src/utils/stream.test.ts::abort() handles a rejecting thenable returned by a listener",
+        "src/utils/stream.test.ts::abort() does not leave an unhandled rejection when an async listener rejects"
+      ],
+      "verification": {
+        "accepted": true,
+        "reason": "",
+        "stages": {
+          "setup": {
+            "rc": 0
+          },
+          "base_without_hidden": {
+            "rc": 0,
+            "tail": "\n\u001b[1m\u001b[30m\u001b[46m RUN \u001b[49m\u001b[39m\u001b[22m \u001b[36mv4.1.9 \u001b[39m\u001b[90m<workspace-path>\u001b[39m\n      \u001b[2mCoverage enabled with \u001b[22m\u001b[33mv8\u001b[39m\n\n \u001b[32m\u2713\u001b[39m \u001b[30m\u001b[45m main \u001b[49m\u001b[39m src/utils/stream.test.ts \u001b[2m(\u001b[22m\u001b[2m11 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 59\u001b[2mms\u001b[22m\u001b[39m\n\n\u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m1 passed\u001b[39m\u001b[22m\u001b[90m (1)\u001b[39m\n\u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m11 passed\u001b[39m\u001b[22m\u001b[90m (11)\u001b[39m\n\u001b[2m   Start at \u001b[22m 01:44:05\n\u001b[2m   Duration \u001b[22m 423ms\u001b[2m (transform 63ms, setup 0ms, import 78ms, tests 59ms, environment 0ms)\u001b[22m\n\n\u001b[34m % \u001b[39m\u001b[2mCoverage report from \u001b[22m\u001b[33mv8\u001b[39m\n-----------|---------|----------|---------|---------|-------------------\nFile       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n-----------|---------|----------|---------|---------|-------------------\nAll files  |   94.28 |     87.5 |   84.61 |   96.96 |                   \n stream.ts |   94.28 |     87.5 |   84.61 |   96.96 | 66                \n-----------|---------|----------|---------|---------|-------------------\n\u001b[33mLoaded \u001b[7m\u001b[33m vitest@4.1.9 \u001b[33m\u001b[27m and \u001b[7m\u001b[33m @vitest/coverage-v8@4.1.7 \u001b[33m\u001b[27m.\nRunning mixed versions is not supported and may lead into bugs\nUpdate your dependencies and make sure the versions match.\u001b[39m\n"
+          },
+          "base_with_hidden": {
+            "rc": 1,
+            "tail": "167|\u001b[39m     api\u001b[33m.\u001b[39m\u001b[34monAbort\u001b[39m(handleAbort)\n\u001b[90m \u001b[2m\u276f\u001b[22m src/utils/stream.ts:\u001b[2m98:53\u001b[22m\u001b[39m\n\u001b[90m \u001b[2m\u276f\u001b[22m StreamingApi.abort src/utils/stream.ts:\u001b[2m98:29\u001b[22m\u001b[39m\n\u001b[90m \u001b[2m\u276f\u001b[22m src/utils/stream.test.ts:\u001b[2m168:9\u001b[22m\u001b[39m\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/2]\u23af\u001b[22m\u001b[39m\n\n\u001b[41m\u001b[1m FAIL \u001b[22m\u001b[49m \u001b[30m\u001b[45m main \u001b[49m\u001b[39m src/utils/stream.test.ts\u001b[2m > \u001b[22mStreamingApi\u001b[2m > \u001b[22mabort() does not leave an unhandled rejection when an async listener rejects\n\u001b[31m\u001b[1mAssertionError\u001b[22m: expected \"vi.fn()\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived:\n\n\u001b[1m  1st vi.fn() call:\n\n\u001b[22m    Array [\n      [Error: async cleanup failed],\n      Promise {},\n    ]\n\u001b[31m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[31m\u001b[39m\n\u001b[36m \u001b[2m\u276f\u001b[22m src/utils/stream.test.ts:\u001b[2m207:29\u001b[22m\u001b[39m\n    \u001b[90m205|\u001b[39m       \u001b[34mexpect\u001b[39m(api\u001b[33m.\u001b[39maborted)\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[35mtrue\u001b[39m)\n    \u001b[90m206|\u001b[39m       \u001b[35mawait\u001b[39m \u001b[35mnew\u001b[39m \u001b[33mPromise\u001b[39m((resolve) \u001b[33m=>\u001b[39m \u001b[34msetTimeout\u001b[39m(resolve\u001b[33m,\u001b[39m \u001b[34m0\u001b[39m))\n    \u001b[90m207|\u001b[39m       \u001b[34mexpect\u001b[39m(unhandled)\u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39m\u001b[34mtoHaveBeenCalled\u001b[39m()\n    \u001b[90m   |\u001b[39m                             \u001b[31m^\u001b[39m\n    \u001b[90m208|\u001b[39m     } \u001b[35mfinally\u001b[39m {\n    \u001b[90m209|\u001b[39m       process\u001b[33m.\u001b[39m\u001b[34moff\u001b[39m(\u001b[32m'unhandledRejection'\u001b[39m\u001b[33m,\u001b[39m unhandled)\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[2/2]\u23af\u001b[22m\u001b[39m\n\nerror: \"vitest\" exited with code 1\n"
+          },
+          "reference_solution": {
+            "rc": 0,
+            "tail": "\n\u001b[1m\u001b[30m\u001b[46m RUN \u001b[49m\u001b[39m\u001b[22m \u001b[36mv4.1.9 \u001b[39m\u001b[90m<workspace-path>\u001b[39m\n      \u001b[2mCoverage enabled with \u001b[22m\u001b[33mv8\u001b[39m\n\n \u001b[32m\u2713\u001b[39m \u001b[30m\u001b[45m main \u001b[49m\u001b[39m src/utils/stream.test.ts \u001b[2m(\u001b[22m\u001b[2m14 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 25\u001b[2mms\u001b[22m\u001b[39m\n\n\u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m1 passed\u001b[39m\u001b[22m\u001b[90m (1)\u001b[39m\n\u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m14 passed\u001b[39m\u001b[22m\u001b[90m (14)\u001b[39m\n\u001b[2m   Start at \u001b[22m 01:44:07\n\u001b[2m   Duration \u001b[22m 288ms\u001b[2m (transform 30ms, setup 0ms, import 40ms, tests 25ms, environment 0ms)\u001b[22m\n\n\u001b[34m % \u001b[39m\u001b[2mCoverage report from \u001b[22m\u001b[33mv8\u001b[39m\n-----------|---------|----------|---------|---------|-------------------\nFile       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n-----------|---------|----------|---------|---------|-------------------\nAll files  |   94.44 |     87.5 |   85.71 |   97.14 |                   \n stream.ts |   94.44 |     87.5 |   85.71 |   97.14 | 66                \n-----------|---------|----------|---------|---------|-------------------\n\u001b[33mLoaded \u001b[7m\u001b[33m vitest@4.1.9 \u001b[33m\u001b[27m and \u001b[7m\u001b[33m @vitest/coverage-v8@4.1.7 \u001b[33m\u001b[27m.\nRunning mixed versions is not supported and may lead into bugs\nUpdate your dependencies and make sure the versions match.\u001b[39m\n"
+          }
+        },
+        "preexisting_tests": [
+          "src/utils/stream.test.ts"
+        ],
+        "test_command": "bun run vitest --run src/utils/stream.test.ts"
+      },
+      "status": "accepted"
+    },
+    {
+      "task_id": "hono-5283",
+      "repo": "honojs/hono",
+      "pr": 5283,
+      "merged_at": "2026-08-23T05:49:26Z",
+      "base_sha": "28a9c128912de19f3fb28b00ae289c9b93f6f392",
+      "head_sha": "a963538f508822e5e040dc1e108b5ea7d1429de6",
+      "title": "fix(client): omit empty query delimiter",
+      "test_paths": [
+        "src/client/client.test.ts"
+      ],
+      "source_paths": [
+        "src/client/client.ts"
+      ],
+      "runnable_test_paths": [
+        "src/client/client.test.ts"
+      ],
+      "statement_source": "pr-title-only",
+      "leak_flags": [],
+      "failing_test_names": [
+        "src/client/client.test.ts::Should omit the query delimiter when no query values are serialized",
+        "src/client/client.test.ts::Should omit the query delimiter when a custom serializer returns no values",
+        "src/client/client.test.ts::Should preserve empty-string query values"
+      ],
+      "verification": {
+        "accepted": true,
+        "reason": "",
+        "stages": {
+          "setup": {
+            "rc": 0
+          },
+          "base_without_hidden": {
+            "rc": 0,
+            "tail": "   6.89 |        0 |       0 |    7.47 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  node.ts          |     5.4 |        0 |       0 |    5.88 | 30-215            \n  router.ts        |      40 |        0 |       0 |      40 | 10-16             \n src/utils         |   29.11 |    22.22 |   26.66 |   29.58 |                   \n  body.ts          |   52.83 |       40 |   66.66 |   51.92 | ...79,209,226-245 \n  buffer.ts        |      18 |        0 |   28.57 |   18.36 | ...2,81-95,99-103 \n  constants.ts     |     100 |      100 |     100 |     100 |                   \n  cookie.ts        |    48.3 |    45.05 |   44.44 |   49.13 | ...52-255,276-279 \n  crypto.ts        |   16.66 |        0 |       0 |   16.66 | ...24,28-30,36-57 \n  html.ts          |    8.64 |        0 |       0 |    8.97 | ...30-139,149-180 \n  url.ts           |   21.76 |    13.27 |      20 |   22.37 | ...16,226-299,314 \n src/validator     |   70.58 |       60 |      75 |   70.58 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  validator.ts     |   70.58 |       60 |      75 |   70.58 | ...32,145-153,165 \n-------------------|---------|----------|---------|---------|-------------------\n\u001b[33mLoaded \u001b[7m\u001b[33m vitest@4.1.9 \u001b[33m\u001b[27m and \u001b[7m\u001b[33m @vitest/coverage-v8@4.1.7 \u001b[33m\u001b[27m.\nRunning mixed versions is not supported and may lead into bugs\nUpdate your dependencies and make sure the versions match.\u001b[39m\n"
+          },
+          "base_with_hidden": {
+            "rc": 1,
+            "tail": "\u001b[32m'http://localhost/search'\u001b[39m)\n    \u001b[90m   |\u001b[39m                          \u001b[31m^\u001b[39m\n    \u001b[90m1864|\u001b[39m     expect(client.search.$url(input).href).toBe('http://localhost/sear\u2026\n    \u001b[90m1865|\u001b[39m     \u001b[34mexpect\u001b[39m(client\u001b[33m.\u001b[39msearch\u001b[33m.\u001b[39m\u001b[34m$path\u001b[39m(input))\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[32m'/search'\u001b[39m)\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/2]\u23af\u001b[22m\u001b[39m\n\n\u001b[41m\u001b[1m FAIL \u001b[22m\u001b[49m \u001b[30m\u001b[45m main \u001b[49m\u001b[39m src/client/client.test.ts\u001b[2m > \u001b[22mEmpty serialized query\u001b[2m > \u001b[22mShould omit the query delimiter when a custom serializer returns no values\n\u001b[31m\u001b[1mAssertionError\u001b[22m: expected 'http://localhost/search?' to be 'http://localhost/search' // Object.is equality\u001b[39m\n\nExpected: \u001b[32m\"http://localhost/search\"\u001b[39m\nReceived: \u001b[31m\"http://localhost/search\u001b[7m?\u001b[27m\"\u001b[39m\n\n\u001b[36m \u001b[2m\u276f\u001b[22m src/client/client.test.ts:\u001b[2m1881:26\u001b[22m\u001b[39m\n    \u001b[90m1879|\u001b[39m     \u001b[35mawait\u001b[39m client\u001b[33m.\u001b[39msearch\u001b[33m.\u001b[39m\u001b[34m$get\u001b[39m(customInput)\n    \u001b[90m1880|\u001b[39m\n    \u001b[90m1881|\u001b[39m     \u001b[34mexpect\u001b[39m(requestedUrl)\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[32m'http://localhost/search'\u001b[39m)\n    \u001b[90m   |\u001b[39m                          \u001b[31m^\u001b[39m\n    \u001b[90m1882|\u001b[39m     expect(client.search.$url(customInput).href).toBe('http://localhos\u2026\n    \u001b[90m1883|\u001b[39m     \u001b[34mexpect\u001b[39m(client\u001b[33m.\u001b[39msearch\u001b[33m.\u001b[39m\u001b[34m$path\u001b[39m(customInput))\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[32m'/search'\u001b[39m)\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[2/2]\u23af\u001b[22m\u001b[39m\n\nerror: \"vitest\" exited with code 1\n"
+          },
+          "reference_solution": {
+            "rc": 0,
+            "tail": "   6.89 |        0 |       0 |    7.47 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  node.ts          |     5.4 |        0 |       0 |    5.88 | 30-215            \n  router.ts        |      40 |        0 |       0 |      40 | 10-16             \n src/utils         |   29.11 |    22.22 |   26.66 |   29.58 |                   \n  body.ts          |   52.83 |       40 |   66.66 |   51.92 | ...79,209,226-245 \n  buffer.ts        |      18 |        0 |   28.57 |   18.36 | ...2,81-95,99-103 \n  constants.ts     |     100 |      100 |     100 |     100 |                   \n  cookie.ts        |    48.3 |    45.05 |   44.44 |   49.13 | ...52-255,276-279 \n  crypto.ts        |   16.66 |        0 |       0 |   16.66 | ...24,28-30,36-57 \n  html.ts          |    8.64 |        0 |       0 |    8.97 | ...30-139,149-180 \n  url.ts           |   21.76 |    13.27 |      20 |   22.37 | ...16,226-299,314 \n src/validator     |   70.58 |       60 |      75 |   70.58 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  validator.ts     |   70.58 |       60 |      75 |   70.58 | ...32,145-153,165 \n-------------------|---------|----------|---------|---------|-------------------\n\u001b[33mLoaded \u001b[7m\u001b[33m vitest@4.1.9 \u001b[33m\u001b[27m and \u001b[7m\u001b[33m @vitest/coverage-v8@4.1.7 \u001b[33m\u001b[27m.\nRunning mixed versions is not supported and may lead into bugs\nUpdate your dependencies and make sure the versions match.\u001b[39m\n"
+          }
+        },
+        "preexisting_tests": [
+          "src/client/client.test.ts"
+        ],
+        "test_command": "bun run vitest --run src/client/client.test.ts"
+      },
+      "status": "accepted"
+    }
+  ],
+  "rejected": [
+    {
+      "task_id": "loguru-1508",
+      "repo": "Delgan/loguru",
+      "pr": 1508,
+      "merged_at": "2026-08-29T18:13:19Z",
+      "base_sha": "8052eff4c1ba86793a6f38ee890a898e902bc1ea",
+      "head_sha": "fb95102a89c5aaee14b4e335497dbaae18a56aea",
+      "title": "Fix incorrect formatting of negative timestamps",
+      "test_paths": [
+        "tests/test_datetime.py"
+      ],
+      "source_paths": [
+        "loguru/_datetime.py"
+      ],
+      "runnable_test_paths": [
+        "tests/test_datetime.py"
+      ],
+      "statement_source": "issue#1501",
+      "leak_flags": [
+        "fix-section"
+      ],
+      "status": "rejected",
+      "reason": "problem statement describes the solution (fix-section); source=issue#1501"
+    },
+    {
+      "task_id": "hono-5252",
+      "repo": "honojs/hono",
+      "pr": 5252,
+      "merged_at": "2026-08-17T03:01:21Z",
+      "base_sha": "63bbcf508c74d9fe7a3e20f4dfe7ffacc566dcce",
+      "head_sha": "a9d740b5736048f940c849ef45ceab0c53f15f9f",
+      "title": "fix(pattern-router/linear-router): prevent prefix overmatch on wildcard routes",
+      "test_paths": [
+        "src/router/common.case.test.ts"
+      ],
+      "source_paths": [
+        "src/router/linear-router/router.ts",
+        "src/router/pattern-router/router.ts"
+      ],
+      "runnable_test_paths": [
+        "src/router/common.case.test.ts"
+      ],
+      "status": "rejected",
+      "reason": "test file excluded from the project's own test configuration: src/router/common.case.test.ts"
+    },
+    {
+      "task_id": "hono-5264",
+      "repo": "honojs/hono",
+      "pr": 5264,
+      "merged_at": "2026-08-19T11:06:49Z",
+      "base_sha": "0293343dbf8f0bca52b210a98bcef31cc61395ee",
+      "head_sha": "e046c973c073ef6bed6749bf40fb4a178af20f53",
+      "title": "fix(jsx/dom): execute previous ref cleanup when ref prop changes on re-render",
+      "test_paths": [
+        "src/jsx/dom/index.test.tsx"
+      ],
+      "source_paths": [
+        "src/jsx/dom/render.ts"
+      ],
+      "runnable_test_paths": [
+        "src/jsx/dom/index.test.tsx"
+      ],
+      "statement_source": "issue#5262",
+      "leak_flags": [
+        "solution-section"
+      ],
+      "status": "rejected",
+      "reason": "problem statement describes the solution (solution-section); source=issue#5262"
+    },
+    {
+      "task_id": "loguru-1484",
+      "repo": "Delgan/loguru",
+      "pr": 1484,
+      "merged_at": "2026-08-23T13:58:04Z",
+      "base_sha": "2a17be730e111cf874d0bf967c4c5da15b7e4670",
+      "head_sha": "2546d51dc8011c2d8a8b9a916bb68c67e630c13b",
+      "title": "Fix first rotation of \"<weekday> at <time>\" ignoring the weekday",
+      "test_paths": [
+        "tests/test_filesink_rotation.py"
+      ],
+      "source_paths": [
+        "loguru/_file_sink.py"
+      ],
+      "runnable_test_paths": [
+        "tests/test_filesink_rotation.py"
+      ],
+      "statement_source": "pr-title-only",
+      "leak_flags": [],
+      "failing_test_names": [],
+      "verification": {
+        "accepted": true,
+        "reason": "",
+        "stages": {
+          "setup": {
+            "rc": 0
+          },
+          "base_without_hidden": {
+            "rc": 0,
+            "tail": "........................................................................ [ 50%]\n.................sssssssss............................................   [100%]\n133 passed, 9 skipped in 1.39s\n"
+          },
+          "base_with_hidden": {
+            "rc": 1,
+            "tail": "\nhours      = [1, 24, 24, 144, 168]\ni          = 0\nm          = 'e'\ntmp_path   = PosixPath('/private/var/folders/33/5t46t6xn059_j8q1rhs634sh0000gn/T/pytest-of-<user>/pytest-46/test_time_rotation_monday_at_11')\nwhen       = 'monday at 13:00'\n\ntests/test_filesink_rotation.py:169: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_filesink_rotation.py::test_time_rotation[w1 at 13:00-hours17] - AssertionError: assert ['', 'a\\n', '... 'd\\n', 'e\\n'] == ['a\\n', 'b\\nc... 'd\\n', 'e\\n']\n  \n  At index 0 diff: '' != 'a\\n'\n  Left contains one more item: 'e\\n'\n  \n  Full diff:\n    [\n  +     '',\n        'a\\n',\n        'b\\n'\n        'c\\n',\n        'd\\n',\n        'e\\n',\n    ]\nFAILED tests/test_filesink_rotation.py::test_time_rotation[tuesday at 13:00-hours18] - AssertionError: assert ['', 'a\\n', '... 'd\\n', 'e\\n'] == ['a\\n', 'b\\nc... 'd\\n', 'e\\n']\n  \n  At index 0 diff: '' != 'a\\n'\n  Left contains one more item: 'e\\n'\n  \n  Full diff:\n    [\n  +     '',\n        'a\\n',\n        'b\\n'\n        'c\\n',\n        'd\\n',\n        'e\\n',\n    ]\nFAILED tests/test_filesink_rotation.py::test_time_rotation[monday at 13:00-hours19] - AssertionError: assert ['', 'a\\n', '... 'd\\n', 'e\\n'] == ['a\\n', 'b\\nc... 'd\\n', 'e\\n']\n  \n  At index 0 diff: '' != 'a\\n'\n  Left contains one more item: 'e\\n'\n  \n  Full diff:\n    [\n  +     '',\n        'a\\n',\n        'b\\n'\n        'c\\n',\n        'd\\n',\n        'e\\n',\n    ]\n3 failed, 134 passed, 9 skipped in 1.47s\n"
+          },
+          "reference_solution": {
+            "rc": 0,
+            "tail": "........................................................................ [ 49%]\n.....................sssssssss.......................................... [ 98%]\n..                                                                       [100%]\n137 passed, 9 skipped in 1.37s\n"
+          }
+        },
+        "preexisting_tests": [
+          "tests/test_filesink_rotation.py"
+        ],
+        "test_command": ".eval-venv/bin/python -m pytest -q tests/test_filesink_rotation.py"
+      },
+      "status": "rejected",
+      "reason": "no failing test names could be extracted; the hidden patch only extends an existing parametrisation"
+    }
+  ]
+}

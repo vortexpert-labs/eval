@@ -1,0 +1,19 @@
+diff --git a/src/utils/stream.ts b/src/utils/stream.ts
+index 62c5487d..3999c61c 100644
+--- a/src/utils/stream.ts
++++ b/src/utils/stream.ts
+@@ -95,7 +95,13 @@ export class StreamingApi {
+   abort() {
+     if (!this.aborted) {
+       this.aborted = true
+-      this.abortSubscribers.forEach((subscriber) => subscriber())
++      this.abortSubscribers.forEach((subscriber) => {
++        try {
++          void Promise.resolve(subscriber()).catch(() => {})
++        } catch {
++          // Ignore synchronous listener errors.
++        }
++      })
+     }
+   }
+ }

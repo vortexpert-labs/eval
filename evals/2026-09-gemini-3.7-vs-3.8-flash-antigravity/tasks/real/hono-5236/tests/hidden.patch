@@ -1,0 +1,77 @@
+diff --git a/src/hono.test.ts b/src/hono.test.ts
+index 8bd83e3c..01a51dbf 100644
+--- a/src/hono.test.ts
++++ b/src/hono.test.ts
+@@ -473,6 +473,20 @@ describe('Routing', () => {
+     expect(await res.text()).toBe('get /add-path-after-route-call')
+   })
+ 
++  it('Should match a suffix wildcard after falling back to TrieRouter', async () => {
++    const app = new Hono()
++    const sub = new Hono()
++    sub.post('/items', (c) => c.text('items'))
++    sub.post('/:slug', (c) => c.text('slug'))
++    app.route('/api', sub)
++    app.get('/assets*', (c) => c.text('asset'))
++
++    const res = await app.request('http://localhost/assets/app.js')
++    expect(res.status).toBe(200)
++    expect(await res.text()).toBe('asset')
++    expect(app.router.name).toBe('SmartRouter + TrieRouter')
++  })
++
+   it('Nested route - subApp with basePath', async () => {
+     const app = new Hono()
+     const book = new Hono().basePath('/book')
+diff --git a/src/router/trie-router/node.test.ts b/src/router/trie-router/node.test.ts
+index af8f207e..5ba5d685 100644
+--- a/src/router/trie-router/node.test.ts
++++ b/src/router/trie-router/node.test.ts
+@@ -37,6 +37,33 @@ describe('Get with * including JS reserved words', () => {
+   })
+ })
+ 
++describe('Get with a suffix wildcard', () => {
++  const node = new Node()
++  node.insert('get', '/assets*', 'assets')
++
++  it.each(['/assets', '/assets-v2', '/assets/app.js'])('matches %s', (path) => {
++    expect(node.search('get', path)[0]).toEqual([['assets', {}]])
++  })
++
++  it('does not match a shorter prefix', () => {
++    expect(node.search('get', '/asset')[0]).toEqual([])
++  })
++
++  it('treats regular expression characters in the prefix literally', () => {
++    const node = new Node()
++    node.insert('get', '/file.+*', 'file')
++    expect(node.search('get', '/file.+js')[0]).toEqual([['file', {}]])
++    expect(node.search('get', '/fileZZjs')[0]).toEqual([])
++  })
++
++  it('registers the pattern when its child already exists', () => {
++    const node = new Node()
++    node.insert('get', '/assets*/x', 'literal')
++    node.insert('get', '/assets*', 'assets')
++    expect(node.search('get', '/assets/app.js')[0]).toEqual([['assets', {}]])
++  })
++})
++
+ describe('Basic Usage', () => {
+   const node = new Node()
+   node.insert('get', '/hello', 'get hello')
+@@ -840,13 +867,3 @@ describe('Pattern spanning multiple parts', () => {
+     })
+   })
+ })
+-
+-describe('Node with initial method and handler', () => {
+-  it('should create a node with method and handler via constructor', () => {
+-    const node = new Node('get', 'initial handler')
+-    node.insert('get', '/hello', 'hello handler')
+-    const [res] = node.search('get', '/hello')
+-    expect(res.length).toBe(1)
+-    expect(res[0][0]).toEqual('hello handler')
+-  })
+-})

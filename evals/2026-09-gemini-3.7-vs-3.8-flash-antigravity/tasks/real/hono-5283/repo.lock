@@ -1,0 +1,51 @@
+{
+  "task_id": "hono-5283",
+  "repo": "honojs/hono",
+  "pr": 5283,
+  "merged_at": "2026-08-23T05:49:26Z",
+  "base_sha": "28a9c128912de19f3fb28b00ae289c9b93f6f392",
+  "head_sha": "a963538f508822e5e040dc1e108b5ea7d1429de6",
+  "title": "fix(client): omit empty query delimiter",
+  "test_paths": [
+    "src/client/client.test.ts"
+  ],
+  "source_paths": [
+    "src/client/client.ts"
+  ],
+  "runnable_test_paths": [
+    "src/client/client.test.ts"
+  ],
+  "statement_source": "pr-title-only",
+  "leak_flags": [],
+  "failing_test_names": [
+    "src/client/client.test.ts::Should omit the query delimiter when no query values are serialized",
+    "src/client/client.test.ts::Should omit the query delimiter when a custom serializer returns no values",
+    "src/client/client.test.ts::Should preserve empty-string query values"
+  ],
+  "verification": {
+    "accepted": true,
+    "reason": "",
+    "stages": {
+      "setup": {
+        "rc": 0
+      },
+      "base_without_hidden": {
+        "rc": 0,
+        "tail": "   6.89 |        0 |       0 |    7.47 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  node.ts          |     5.4 |        0 |       0 |    5.88 | 30-215            \n  router.ts        |      40 |        0 |       0 |      40 | 10-16             \n src/utils         |   29.11 |    22.22 |   26.66 |   29.58 |                   \n  body.ts          |   52.83 |       40 |   66.66 |   51.92 | ...79,209,226-245 \n  buffer.ts        |      18 |        0 |   28.57 |   18.36 | ...2,81-95,99-103 \n  constants.ts     |     100 |      100 |     100 |     100 |                   \n  cookie.ts        |    48.3 |    45.05 |   44.44 |   49.13 | ...52-255,276-279 \n  crypto.ts        |   16.66 |        0 |       0 |   16.66 | ...24,28-30,36-57 \n  html.ts          |    8.64 |        0 |       0 |    8.97 | ...30-139,149-180 \n  url.ts           |   21.76 |    13.27 |      20 |   22.37 | ...16,226-299,314 \n src/validator     |   70.58 |       60 |      75 |   70.58 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  validator.ts     |   70.58 |       60 |      75 |   70.58 | ...32,145-153,165 \n-------------------|---------|----------|---------|---------|-------------------\n\u001b[33mLoaded \u001b[7m\u001b[33m vitest@4.1.9 \u001b[33m\u001b[27m and \u001b[7m\u001b[33m @vitest/coverage-v8@4.1.7 \u001b[33m\u001b[27m.\nRunning mixed versions is not supported and may lead into bugs\nUpdate your dependencies and make sure the versions match.\u001b[39m\n"
+      },
+      "base_with_hidden": {
+        "rc": 1,
+        "tail": "\u001b[32m'http://localhost/search'\u001b[39m)\n    \u001b[90m   |\u001b[39m                          \u001b[31m^\u001b[39m\n    \u001b[90m1864|\u001b[39m     expect(client.search.$url(input).href).toBe('http://localhost/sear\u2026\n    \u001b[90m1865|\u001b[39m     \u001b[34mexpect\u001b[39m(client\u001b[33m.\u001b[39msearch\u001b[33m.\u001b[39m\u001b[34m$path\u001b[39m(input))\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[32m'/search'\u001b[39m)\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/2]\u23af\u001b[22m\u001b[39m\n\n\u001b[41m\u001b[1m FAIL \u001b[22m\u001b[49m \u001b[30m\u001b[45m main \u001b[49m\u001b[39m src/client/client.test.ts\u001b[2m > \u001b[22mEmpty serialized query\u001b[2m > \u001b[22mShould omit the query delimiter when a custom serializer returns no values\n\u001b[31m\u001b[1mAssertionError\u001b[22m: expected 'http://localhost/search?' to be 'http://localhost/search' // Object.is equality\u001b[39m\n\nExpected: \u001b[32m\"http://localhost/search\"\u001b[39m\nReceived: \u001b[31m\"http://localhost/search\u001b[7m?\u001b[27m\"\u001b[39m\n\n\u001b[36m \u001b[2m\u276f\u001b[22m src/client/client.test.ts:\u001b[2m1881:26\u001b[22m\u001b[39m\n    \u001b[90m1879|\u001b[39m     \u001b[35mawait\u001b[39m client\u001b[33m.\u001b[39msearch\u001b[33m.\u001b[39m\u001b[34m$get\u001b[39m(customInput)\n    \u001b[90m1880|\u001b[39m\n    \u001b[90m1881|\u001b[39m     \u001b[34mexpect\u001b[39m(requestedUrl)\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[32m'http://localhost/search'\u001b[39m)\n    \u001b[90m   |\u001b[39m                          \u001b[31m^\u001b[39m\n    \u001b[90m1882|\u001b[39m     expect(client.search.$url(customInput).href).toBe('http://localhos\u2026\n    \u001b[90m1883|\u001b[39m     \u001b[34mexpect\u001b[39m(client\u001b[33m.\u001b[39msearch\u001b[33m.\u001b[39m\u001b[34m$path\u001b[39m(customInput))\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[32m'/search'\u001b[39m)\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[2/2]\u23af\u001b[22m\u001b[39m\n\nerror: \"vitest\" exited with code 1\n"
+      },
+      "reference_solution": {
+        "rc": 0,
+        "tail": "   6.89 |        0 |       0 |    7.47 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  node.ts          |     5.4 |        0 |       0 |    5.88 | 30-215            \n  router.ts        |      40 |        0 |       0 |      40 | 10-16             \n src/utils         |   29.11 |    22.22 |   26.66 |   29.58 |                   \n  body.ts          |   52.83 |       40 |   66.66 |   51.92 | ...79,209,226-245 \n  buffer.ts        |      18 |        0 |   28.57 |   18.36 | ...2,81-95,99-103 \n  constants.ts     |     100 |      100 |     100 |     100 |                   \n  cookie.ts        |    48.3 |    45.05 |   44.44 |   49.13 | ...52-255,276-279 \n  crypto.ts        |   16.66 |        0 |       0 |   16.66 | ...24,28-30,36-57 \n  html.ts          |    8.64 |        0 |       0 |    8.97 | ...30-139,149-180 \n  url.ts           |   21.76 |    13.27 |      20 |   22.37 | ...16,226-299,314 \n src/validator     |   70.58 |       60 |      75 |   70.58 |                   \n  index.ts         |       0 |        0 |       0 |       0 |                   \n  validator.ts     |   70.58 |       60 |      75 |   70.58 | ...32,145-153,165 \n-------------------|---------|----------|---------|---------|-------------------\n\u001b[33mLoaded \u001b[7m\u001b[33m vitest@4.1.9 \u001b[33m\u001b[27m and \u001b[7m\u001b[33m @vitest/coverage-v8@4.1.7 \u001b[33m\u001b[27m.\nRunning mixed versions is not supported and may lead into bugs\nUpdate your dependencies and make sure the versions match.\u001b[39m\n"
+      }
+    },
+    "preexisting_tests": [
+      "src/client/client.test.ts"
+    ],
+    "test_command": "bun run vitest --run src/client/client.test.ts"
+  },
+  "status": "accepted"
+}

@@ -1,0 +1,52 @@
+{
+  "task_id": "loguru-1510",
+  "repo": "Delgan/loguru",
+  "pr": 1510,
+  "merged_at": "2026-08-30T16:20:05Z",
+  "base_sha": "d3c590573edb41884feb206823a47c3a9e14aa68",
+  "head_sha": "032a99677620c00b4e7c6e154bc965dbd2e16400",
+  "title": "Fix \"@logger.catch()\" ignoring errors raised by \"athrow()\"",
+  "test_paths": [
+    "tests/exceptions/output/modern/exception_formatting_async_generator_throw.txt",
+    "tests/exceptions/source/modern/decorate_async_generator.py",
+    "tests/exceptions/source/modern/exception_formatting_async_generator_throw.py",
+    "tests/test_exceptions_formatting.py"
+  ],
+  "source_paths": [
+    "loguru/_logger.py"
+  ],
+  "runnable_test_paths": [
+    "tests/test_exceptions_formatting.py"
+  ],
+  "statement_source": "issue#1503",
+  "leak_flags": [],
+  "failing_test_names": [
+    "tests/exceptions/source/modern/decorate_async_generator.py::test_decorate_async_generator_then_async_throw_with_handled_error"
+  ],
+  "verification": {
+    "accepted": true,
+    "reason": "",
+    "stages": {
+      "setup": {
+        "rc": 0
+      },
+      "base_without_hidden": {
+        "rc": 0,
+        "tail": "........................................................................ [ 71%]\n........................ss...                                            [100%]\n99 passed, 2 skipped in 10.90s\n"
+      },
+      "base_with_hidden": {
+        "rc": 1,
+        "tail": "         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<HOME>/.local/share/mise/installs/python/3.12.14/lib/python3.12/asyncio/base_events.py\", line 691, in run_until_complete\n    return future.result()\n           ^^^^^^^^^^^^^^^\n  File \"<workspace-path>\", line 95, in coro\n    await gen.athrow(ValueError)\n  File \"<workspace-path>\", line 1361, in athrow\n    return await self._gen.athrow(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<workspace-path>\", line 88, in generator\n    yield x\nValueError\n\n=========================== short test summary info ============================\nFAILED tests/test_exceptions_formatting.py::test_exception_modern[exception_formatting_async_generator_throw-minimum_python_version2] - AssertionError: assert 1 == 0\n +  where 1 = <Popen: returncode: 1 args: ['<workspace-path>>.returncode\nFAILED tests/test_exceptions_formatting.py::test_exception_modern[decorate_async_generator-minimum_python_version3] - AssertionError: assert 1 == 0\n +  where 1 = <Popen: returncode: 1 args: ['<workspace-path>>.returncode\n2 failed, 98 passed, 2 skipped in 10.92s\n"
+      },
+      "reference_solution": {
+        "rc": 0,
+        "tail": "........................................................................ [ 70%]\n.........................ss...                                           [100%]\n100 passed, 2 skipped in 11.15s\n"
+      }
+    },
+    "preexisting_tests": [
+      "tests/test_exceptions_formatting.py"
+    ],
+    "test_command": ".eval-venv/bin/python -m pytest -q tests/test_exceptions_formatting.py"
+  },
+  "status": "accepted"
+}

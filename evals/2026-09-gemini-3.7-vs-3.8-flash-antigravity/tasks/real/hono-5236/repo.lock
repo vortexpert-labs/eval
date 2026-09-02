@@ -1,0 +1,56 @@
+{
+  "task_id": "hono-5236",
+  "repo": "honojs/hono",
+  "pr": 5236,
+  "merged_at": "2026-08-17T00:37:48Z",
+  "base_sha": "41bdc4288ed7023c24d35f32bd065bd963435e3e",
+  "head_sha": "7c7958f015f8206128aa28550f809fdd03623767",
+  "title": "fix(trie-router): match suffix wildcard routes",
+  "test_paths": [
+    "src/hono.test.ts",
+    "src/router/trie-router/node.test.ts"
+  ],
+  "source_paths": [
+    "src/router/trie-router/node.ts",
+    "src/router/trie-router/router.ts"
+  ],
+  "runnable_test_paths": [
+    "src/hono.test.ts",
+    "src/router/trie-router/node.test.ts"
+  ],
+  "statement_source": "issue#5219",
+  "leak_flags": [],
+  "failing_test_names": [
+    "src/hono.test.ts::Should match a suffix wildcard after falling back to TrieRouter",
+    "src/router/trie-router/node.test.ts::does not match a shorter prefix",
+    "src/router/trie-router/node.test.ts::treats regular expression characters in the prefix literally",
+    "src/router/trie-router/node.test.ts::registers the pattern when its child already exists"
+  ],
+  "verification": {
+    "accepted": true,
+    "reason": "",
+    "stages": {
+      "setup": {
+        "rc": 0
+      },
+      "base_without_hidden": {
+        "rc": 0,
+        "tail": "on/Developer/temp/agyeval-work/wt/verify-hono-5236/\u001b[39msrc/hono-base.ts:510:17\u001b[90m)\u001b[39m\n\n\u001b[90mstderr\u001b[2m | src/hono.test.ts\u001b[2m > \u001b[22m\u001b[2mError handling in middleware\u001b[2m > \u001b[22m\u001b[2mShould handle the error in middleware - async\n\u001b[22m\u001b[39mError: Error message\n    at \u001b[90m<workspace-path>/\u001b[39msrc/hono.test.ts:1585:11\n    at dispatch \u001b[90m(<workspace-path>/\u001b[39msrc/compose.ts:51:23\u001b[90m)\u001b[39m\n    at \u001b[90m<workspace-path>/\u001b[39msrc/compose.ts:51:46\n    at \u001b[90m<workspace-path>/\u001b[39msrc/hono.test.ts:1570:11\n    at dispatch \u001b[90m(<workspace-path>/\u001b[39msrc/compose.ts:51:23\u001b[90m)\u001b[39m\n    at \u001b[90m<workspace-path>/\u001b[39msrc/compose.ts:23:12\n    at \u001b[90m<workspace-path>/\u001b[39msrc/hono-base.ts:455:31\n    at Hono.#dispatch \u001b[90m(<workspace-path>/\u001b[39msrc/hono-base.ts:466:5\u001b[90m)\u001b[39m\n    at Hono.fetch \u001b[90m(<workspace-path>/\u001b[39msrc/hono-base.ts:485:17\u001b[90m)\u001b[39m\n    at Hono.request \u001b[90m(<workspace-path>/\u001b[39msrc/hono-base.ts:510:17\u001b[90m)\u001b[39m\n\n"
+      },
+      "base_with_hidden": {
+        "rc": 1,
+        "tail": "'\u001b[39m)[\u001b[34m0\u001b[39m])\u001b[33m.\u001b[39m\u001b[34mtoEqual\u001b[39m([[\u001b[32m'file'\u001b[39m\u001b[33m,\u001b[39m {}]])\n    \u001b[90m   |\u001b[39m                                                \u001b[31m^\u001b[39m\n    \u001b[90m 56|\u001b[39m     \u001b[34mexpect\u001b[39m(node\u001b[33m.\u001b[39m\u001b[34msearch\u001b[39m(\u001b[32m'get'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'/fileZZjs'\u001b[39m)[\u001b[34m0\u001b[39m])\u001b[33m.\u001b[39m\u001b[34mtoEqual\u001b[39m([])\n    \u001b[90m 57|\u001b[39m   })\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[3/6]\u23af\u001b[22m\u001b[39m\n\n\u001b[41m\u001b[1m FAIL \u001b[22m\u001b[49m \u001b[30m\u001b[45m main \u001b[49m\u001b[39m src/router/trie-router/node.test.ts\u001b[2m > \u001b[22mGet with a suffix wildcard\u001b[2m > \u001b[22mregisters the pattern when its child already exists\n\u001b[31m\u001b[1mAssertionError\u001b[22m: expected [] to deeply equal [ [ 'assets', {} ] ]\u001b[39m\n\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\n\u001b[32m- [\u001b[39m\n\u001b[32m-   [\u001b[39m\n\u001b[32m-     \"assets\",\u001b[39m\n\u001b[32m-     {},\u001b[39m\n\u001b[32m-   ],\u001b[39m\n\u001b[32m- ]\u001b[39m\n\u001b[31m+ []\u001b[39m\n\n\u001b[36m \u001b[2m\u276f\u001b[22m src/router/trie-router/node.test.ts:\u001b[2m63:53\u001b[22m\u001b[39m\n    \u001b[90m 61|\u001b[39m     node\u001b[33m.\u001b[39m\u001b[34minsert\u001b[39m(\u001b[32m'get'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'/assets*/x'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'literal'\u001b[39m)\n    \u001b[90m 62|\u001b[39m     node\u001b[33m.\u001b[39m\u001b[34minsert\u001b[39m(\u001b[32m'get'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'/assets*'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'assets'\u001b[39m)\n    \u001b[90m 63|\u001b[39m     expect(node.search('get', '/assets/app.js')[0]).toEqual([['assets'\u2026\n    \u001b[90m   |\u001b[39m                                                     \u001b[31m^\u001b[39m\n    \u001b[90m 64|\u001b[39m   })\n    \u001b[90m 65|\u001b[39m })\n\n\u001b[31m\u001b[2m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[4/6]\u23af\u001b[22m\u001b[39m\n\nerror: \"vitest\" exited with code 1\n"
+      },
+      "reference_solution": {
+        "rc": 0,
+        "tail": "on/Developer/temp/agyeval-work/wt/verify-hono-5236/\u001b[39msrc/hono-base.ts:510:17\u001b[90m)\u001b[39m\n\n\u001b[90mstderr\u001b[2m | src/hono.test.ts\u001b[2m > \u001b[22m\u001b[2mError handling in middleware\u001b[2m > \u001b[22m\u001b[2mShould handle the error in middleware - async\n\u001b[22m\u001b[39mError: Error message\n    at \u001b[90m<workspace-path>/\u001b[39msrc/hono.test.ts:1599:11\n    at dispatch \u001b[90m(<workspace-path>/\u001b[39msrc/compose.ts:51:23\u001b[90m)\u001b[39m\n    at \u001b[90m<workspace-path>/\u001b[39msrc/compose.ts:51:46\n    at \u001b[90m<workspace-path>/\u001b[39msrc/hono.test.ts:1584:11\n    at dispatch \u001b[90m(<workspace-path>/\u001b[39msrc/compose.ts:51:23\u001b[90m)\u001b[39m\n    at \u001b[90m<workspace-path>/\u001b[39msrc/compose.ts:23:12\n    at \u001b[90m<workspace-path>/\u001b[39msrc/hono-base.ts:455:31\n    at Hono.#dispatch \u001b[90m(<workspace-path>/\u001b[39msrc/hono-base.ts:466:5\u001b[90m)\u001b[39m\n    at Hono.fetch \u001b[90m(<workspace-path>/\u001b[39msrc/hono-base.ts:485:17\u001b[90m)\u001b[39m\n    at Hono.request \u001b[90m(<workspace-path>/\u001b[39msrc/hono-base.ts:510:17\u001b[90m)\u001b[39m\n\n"
+      }
+    },
+    "preexisting_tests": [
+      "src/hono.test.ts",
+      "src/router/trie-router/node.test.ts"
+    ],
+    "test_command": "bun run vitest --run src/hono.test.ts src/router/trie-router/node.test.ts"
+  },
+  "status": "accepted"
+}

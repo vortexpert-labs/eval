@@ -1,0 +1,49 @@
+{
+  "task_id": "click-3769",
+  "repo": "pallets/click",
+  "pr": 3769,
+  "merged_at": "2026-08-15T17:56:58Z",
+  "base_sha": "8b44edfff7d9a6c895fa804148c16b3a0bc9efb5",
+  "head_sha": "f316d5cb3aa89b57c14aee54da6ac9062ac5bec4",
+  "title": "Settles progress bar on its final position",
+  "test_paths": [
+    "tests/test_termui.py"
+  ],
+  "source_paths": [
+    "src/click/_termui_impl.py"
+  ],
+  "runnable_test_paths": [
+    "tests/test_termui.py"
+  ],
+  "statement_source": "issue#3571",
+  "leak_flags": [],
+  "failing_test_names": [
+    "tests/test_termui.py::test_progressbar_lands_on_final_position"
+  ],
+  "verification": {
+    "accepted": true,
+    "reason": "",
+    "stages": {
+      "setup": {
+        "rc": 0
+      },
+      "base_without_hidden": {
+        "rc": 0,
+        "tail": "............................................sssssssssssssssssssss....... [ 29%]\n.........ss............................................................. [ 58%]\n........................................................................ [ 87%]\n................................                                         [100%]\n225 passed, 23 skipped in 0.57s\n"
+      },
+      "base_with_hidden": {
+        "rc": 1,
+        "tail": "ength=20, show_pos=True, update_min_steps=update_min_steps, file=stream\n            ) as bar:\n                for _ in range(20):\n                    bar.update(1)\n    \n>       assert bar.pos == 20\nE       assert 0 == 20\nE        +  where 0 = <click._termui_impl.ProgressBar object at 0x1063b1cd0>.pos\n\ntests/test_termui.py:135: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_termui.py::test_progressbar_lands_on_final_position[iterate-3] - assert 18 == 20\n +  where 18 = <click._termui_impl.ProgressBar object at 0x1063b11c0>.pos\nFAILED tests/test_termui.py::test_progressbar_lands_on_final_position[iterate-7] - assert 14 == 20\n +  where 14 = <click._termui_impl.ProgressBar object at 0x1063b3830>.pos\nFAILED tests/test_termui.py::test_progressbar_lands_on_final_position[iterate-25] - assert 0 == 20\n +  where 0 = <click._termui_impl.ProgressBar object at 0x1063b1df0>.pos\nFAILED tests/test_termui.py::test_progressbar_lands_on_final_position[update-3] - assert 18 == 20\n +  where 18 = <click._termui_impl.ProgressBar object at 0x10634f1d0>.pos\nFAILED tests/test_termui.py::test_progressbar_lands_on_final_position[update-7] - assert 14 == 20\n +  where 14 = <click._termui_impl.ProgressBar object at 0x10634c680>.pos\nFAILED tests/test_termui.py::test_progressbar_lands_on_final_position[update-25] - assert 0 == 20\n +  where 0 = <click._termui_impl.ProgressBar object at 0x1063b1cd0>.pos\n6 failed, 231 passed, 23 skipped in 0.75s\n"
+      },
+      "reference_solution": {
+        "rc": 0,
+        "tail": "........................................................ssssssssssssssss [ 27%]\nsssss................ss................................................. [ 55%]\n........................................................................ [ 83%]\n............................................                             [100%]\n237 passed, 23 skipped in 0.50s\n"
+      }
+    },
+    "preexisting_tests": [
+      "tests/test_termui.py"
+    ],
+    "test_command": ".eval-venv/bin/python -m pytest -p no:randomly -q tests/test_termui.py"
+  },
+  "status": "accepted"
+}
