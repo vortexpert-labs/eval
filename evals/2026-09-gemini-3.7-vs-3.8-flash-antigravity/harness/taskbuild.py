@@ -46,22 +46,40 @@ ISSUE_REF = re.compile(
 #: Phrases that indicate an author describing their own change rather than the
 #: symptom. A statement matching any of these is rejected as solution leakage.
 LEAK_PATTERNS = [
-    (re.compile(r"^#{1,6}\s*(the\s+)?fix\b", re.IGNORECASE | re.MULTILINE), "fix-section"),
-    (re.compile(r"^#{1,6}\s*(the\s+)?(cause|solution|approach|changes?)\b",
+    # A heading that is *only* "Fix" / "The fix" / "Proposed fix" is the author
+    # describing their change. A heading that merely starts with "fix(" or "Fix "
+    # and continues is a conventional-commit title describing the symptom.
+    (re.compile(r"^#{1,6}\s*(?:the\s+|proposed\s+|my\s+|suggested\s+)?fix(?:es)?\s*:?\s*$",
+                re.IGNORECASE | re.MULTILINE), "fix-section"),
+    (re.compile(r"^#{1,6}\s*(?:the\s+)?(?:cause|root\s+cause|solution|approach|"
+                r"changes?|implementation)\s*:?\s*$",
                 re.IGNORECASE | re.MULTILINE), "solution-section"),
     (re.compile(r"\bthe fix\b", re.IGNORECASE), "the-fix-phrase"),
-    (re.compile(r"\b(?:I|we)\s+(?:changed|fixed|added|patched|refactored)\b",
+    (re.compile(r"\b(?:I|we)\s+(?:changed|fixed|added|patched|refactored|implemented)\b",
                 re.IGNORECASE), "author-narrative"),
     (re.compile(r"```diff", re.IGNORECASE), "diff-block"),
-    (re.compile(r"^#{1,6}\s*tests?\b", re.IGNORECASE | re.MULTILINE), "tests-section"),
-    (re.compile(r"\b(?:added|adds)\s+(?:a\s+)?(?:new\s+)?tests?\b", re.IGNORECASE),
+    (re.compile(r"^#{1,6}\s*tests?\s*:?\s*$", re.IGNORECASE | re.MULTILINE),
+     "tests-section"),
+    (re.compile(r"\b(?:added|adds|adding)\s+(?:a\s+|two\s+|new\s+)*tests?\b",
+                re.IGNORECASE), "describes-added-tests"),
+    (re.compile(r"\btests?\s+(?:were\s+|was\s+)?added\b", re.IGNORECASE),
      "describes-added-tests"),
 ]
 
 
 def leak_scan(text: str) -> list[str]:
-    """Flags indicating the statement describes the solution rather than the bug."""
-    return sorted({name for pattern, name in LEAK_PATTERNS if pattern.search(text)})
+    """Flags indicating the statement describes the solution rather than the bug.
+
+    The leading title line is excluded. A title is symptom-level by convention —
+    "fix(client): omit empty query delimiter" names what was wrong, not what
+    changed — and scanning it produces false positives on every conventional-commit
+    prefix and every title beginning with "Fix".
+    """
+    lines = text.strip().splitlines()
+    if lines and lines[0].lstrip().startswith("#"):
+        lines = lines[1:]
+    body = "\n".join(lines)
+    return sorted({name for pattern, name in LEAK_PATTERNS if pattern.search(body)})
 
 
 def linked_issue(slug: str, pr: dict) -> dict | None:

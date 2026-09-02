@@ -191,6 +191,10 @@ def test_leak_scan() -> None:
     check("a diff block is caught", "diff-block" in leak_scan("```diff\n-a\n+b\n```"))
     check("author narrative is caught",
           "author-narrative" in leak_scan("I changed the parser to handle this."))
+    check("a conventional-commit title is not a fix section",
+          leak_scan("## fix(client): omit empty query delimiter") == [])
+    check("a title beginning with Fix is not a fix section",
+          leak_scan('## Fix `deepcopy` of `Sentinel` members') == [])
     check("a plain bug report passes",
           leak_scan("Calling foo() with a negative value raises ValueError.") == [])
     check("a reproduction script passes",
